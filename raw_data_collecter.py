@@ -3,6 +3,7 @@ from PyPDF2 import PdfReader
 import json
 from bs4 import BeautifulSoup
 import json
+import pwd
 import numpy as np
 import requests
 from tqdm import tqdm
@@ -113,8 +114,11 @@ class RawDataCollector:
                  tokenized_root="tokenized_paper",
                  annotate_data_root="annotation_paper"):
         self.pdf_root = os.path.join(raw_data_root, pdf_root)
+        # print(f"pdf_root: {self.pdf_root}")
         self.parsed_root = os.path.join(raw_data_root, parsed_root)
+        # print(f"parsed_root: {self.parsed_root}")
         self.tokenized_root = os.path.join(raw_data_root, tokenized_root)
+        # print(f"tokenized_root: {self.tokenized_root}")
         self.annotate_data_root = os.path.join(raw_data_root, annotate_data_root)
         if not os.path.exists(self.tokenized_root):
             os.mkdir(self.tokenized_root)
@@ -155,7 +159,7 @@ class RawDataCollector:
                             print(f"An exception was raised while parsing {txt}:")
                             print(e)
                             break
-                            
+
     def prep_one_paper(self, read_path, tokenized_path, anno_raw_path):
         with open(read_path, "r") as f:
             lines = f.read().splitlines()
@@ -190,7 +194,8 @@ class RawDataCollector:
             self.tokenize_papers()
 
 if __name__=="__main__":
-    DataCollector = RawDataCollector()
+    project_root = os.getcwd()
+    DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Data"))
     DataCollector.prep_raw_data(tokenize=True,
                                 parse=True,
                                 collect=False)
