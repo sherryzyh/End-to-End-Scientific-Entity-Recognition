@@ -141,6 +141,7 @@ class RawDataCollector:
                 self.scraper.getEMNLPsForYear(year, 10)
 
     def parse_papers(self, source, destination):
+        nlp_parser = spacy.load('en_core_web_sm')
         for folder in os.listdir(source):
             if not os.path.isdir(os.path.join(source, folder)):
                 continue
@@ -148,13 +149,21 @@ class RawDataCollector:
             conference, year = folder_info[0], folder_info[1]
             for pdf in os.listdir(os.path.join(source, folder)):
                 reader = PdfReader(os.path.join(source, folder, pdf))
-                article = pdf.split(".")[1]
+                article_info = pdf.split(".")
+                order, article = article_info[0], article_info[1]
+                if order == "1":
+                    continue
                 txt = year + "_" + conference + "_" + article + ".txt"
                 save_as = os.path.join(destination, txt)
-                with open(save_as, "w") as txt_file:
+                with open(save_as, "w", encoding="utf-8") as txt_file:
                     for page in reader.pages:
                         try:
-                            txt_file.write(page.extract_text())
+                            raw_text = page.extract_text()
+                            text_list = raw_text.split("\n")
+                            text = " ".join(text_list)
+                            tokens = nlp_parser(text)
+                            for sent in tokens.sents:
+                                txt_file.write(sent.text.strip() + "\n")
                         except Exception as e:
                             print(f"An exception was raised while parsing {txt}:")
                             print(e)
