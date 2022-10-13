@@ -1,5 +1,5 @@
 import os
-# from PyPDF2 import PdfReader
+from PyPDF2 import PdfReader
 import json
 from bs4 import BeautifulSoup
 import json
@@ -9,7 +9,6 @@ from tqdm import tqdm
 import spacy
 from spacy.lang.en import English
 from spacy.tokenizer import Tokenizer
-import scipdf
 
 class ACLScraper:
     def __init__(self, workingdir = '/content/drive/MyDrive/NLP'):
@@ -156,35 +155,7 @@ class RawDataCollector:
                             print(f"An exception was raised while parsing {txt}:")
                             print(e)
                             break
-
-    # def parse_paper_with_scipdf(self):
-    #     article_dict = scipdf.parse_pdf_to_dict('example_data/futoma2017improved.pdf')  # return dictionary
-    #
-    #     # option to parse directly from URL to PDF, if as_list is set to True, output 'text' of parsed section will be in a list of paragraphs instead
-    #     article_dict = scipdf.parse_pdf_to_dict(
-    #         'https://www.biorxiv.org/content/biorxiv/early/2018/11/20/463760.full.pdf', as_list=False)
-    #
-    #     # # output example
-    #     # >> {
-    #     #     'title': 'Proceedings of Machine Learning for Healthcare',
-    #     #     'abstract': '...',
-    #     #     'sections': [
-    #     #         {'heading': '...', 'text': '...'},
-    #     #         {'heading': '...', 'text': '...'},
-    #     #         ...
-    #     #     ],
-    #     #     'references': [
-    #     #         {'title': '...', 'year': '...', 'journal': '...', 'author': '...'},
-    #     #         ...
-    #     #     ],
-    #     #     'figures': [
-    #     #         {'figure_label': '...', 'figure_type': '...', 'figure_id': '...', 'figure_caption': '...',
-    #     #          'figure_data': '...'},
-    #     #         ...
-    #     #     ],
-    #     #     'doi': '...'
-    #     # }
-
+                            
     def prep_one_paper(self, read_path, tokenized_path, anno_raw_path):
         with open(read_path, "r") as f:
             lines = f.read().splitlines()
