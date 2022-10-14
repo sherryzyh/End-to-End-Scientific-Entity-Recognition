@@ -8,3 +8,6 @@ Environment setup:
    
 3. Run setup script to install all required libraries
    `bash setup.sh`
+
+References: 
+Baseline: https://github.com/marcellusruben/medium-resources/blob/main/NER_BERT/NER_with_BERT.ipynb
