@@ -1,0 +1,18 @@
+B-MethodName
+I-MethodName
+B-HyperparameterName
+I-HyperparameterName
+B-HyperparameterValue
+I-HyperparameterValue
+B-MetricName
+I-MetricName
+B-MetricValue
+I-MetricValue
+B-TaskName
+I-TaskName
+B-DatasetName
+I-DatasetName
+
+
+Fig. Table 里面任何东西都不annotate
+Title, Section Title, Appendix 需要annotate

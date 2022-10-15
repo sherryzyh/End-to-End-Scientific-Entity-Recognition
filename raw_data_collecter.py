@@ -120,6 +120,8 @@ class RawDataCollector:
         self.tokenized_root = os.path.join(raw_data_root, tokenized_root)
         # print(f"tokenized_root: {self.tokenized_root}")
         self.annotate_data_root = os.path.join(raw_data_root, annotate_data_root)
+        if not os.path.exists(self.parsed_root):
+            os.mkdir(self.parsed_root)
         if not os.path.exists(self.tokenized_root):
             os.mkdir(self.tokenized_root)
         if not os.path.exists(self.annotate_data_root):
@@ -180,6 +182,7 @@ class RawDataCollector:
             tokens_list = "".join([x.text + " " for x in tokens])
             tokenized_lines.append(tokens_list)
             annof.write("\n".join([x.text + " O" for x in tokens]))
+            annof.write("\n\n")
         annof.close()
 
         tokenf = open(tokenized_path, "w")
@@ -206,5 +209,5 @@ if __name__=="__main__":
     project_root = os.getcwd()
     DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Data"))
     DataCollector.prep_raw_data(tokenize=True,
-                                parse=True,
+                                parse=False,
                                 collect=False)
