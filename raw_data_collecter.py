@@ -181,8 +181,8 @@ class RawDataCollector:
             tokens = self.tokenizer(l)
             tokens_list = "".join([x.text + " " for x in tokens])
             tokenized_lines.append(tokens_list)
-            annof.write("\n".join([x.text + " O" for x in tokens]))
-            annof.write("\n\n")
+            annof.write("".join([x.text + " O\n" for x in tokens]))
+            annof.write("\n")
         annof.close()
 
         tokenf = open(tokenized_path, "w")
