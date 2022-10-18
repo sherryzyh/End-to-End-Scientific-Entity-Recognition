@@ -14,5 +14,6 @@ B-DatasetName
 I-DatasetName
 
 
-Fig. Table 里面任何东西都不annotate
-Title, Section Title, Appendix 需要annotate
+1)Fig. Table footnote 手动删掉
+2)Title, Section Title, Appendix, Reference 需要annotate
+3)Hyperparmeter 经常产生 parse 错位的问题，在文中读到的时候，可以注意一下，手动在 txt 文档中修改一下
