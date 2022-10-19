@@ -7,9 +7,8 @@ import pwd
 import numpy as np
 import requests
 from tqdm import tqdm
+from utils import MyTokenizer
 import spacy
-from spacy.lang.en import English
-from spacy.tokenizer import Tokenizer
 
 class ACLScraper:
     def __init__(self, workingdir = '/content/drive/MyDrive/NLP'):
@@ -128,8 +127,7 @@ class RawDataCollector:
             os.mkdir(self.annotate_data_root)
 
         self.scraper = ACLScraper(self.pdf_root)
-        nlp = English()
-        self.tokenizer = nlp.tokenizer
+        self.tokenizer = MyTokenizer()
 
     def collect_pdf_papers(self):
         for year in range(2015, 2023):
@@ -178,10 +176,11 @@ class RawDataCollector:
         annof = open(anno_raw_path, "w")
         tokenized_lines = []
         for l in lines:
-            tokens = self.tokenizer(l)
-            tokens_list = "".join([x.text + " " for x in tokens])
+            # tokenize the line in the paper
+            token_space_str, token_label_str = self.tokenizer.get_tokenized_line(l)
+            tokens_list = token_space_str
             tokenized_lines.append(tokens_list)
-            annof.write("".join([x.text + " O\n" for x in tokens]))
+            annof.write(token_label_str)
             annof.write("\n")
         annof.close()
 
