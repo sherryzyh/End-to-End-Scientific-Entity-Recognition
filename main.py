@@ -38,6 +38,8 @@ if __name__ == '__main__':
     torch.manual_seed(SEED)
     np.random.seed(SEED)
     random.seed(SEED)
+
+    dataset = get_dataset('./UN-named-entity-recognition/tagged-training/', './UN-named-entity-recognition/tagged-test/')
     
     df_train = pd.read_csv(train_data)
     df_test = pd.read_csv(test_data)

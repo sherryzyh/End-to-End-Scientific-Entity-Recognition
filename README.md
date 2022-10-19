@@ -10,4 +10,7 @@ Environment setup:
    `bash setup.sh`
 
 References: 
-Baseline: https://github.com/marcellusruben/medium-resources/blob/main/NER_BERT/NER_with_BERT.ipynb
+Baseline: 
+https://huggingface.co/docs/transformers/tasks/token_classification
+https://github.com/marcellusruben/medium-resources/blob/main/NER_BERT/NER_with_BERT.ipynb
+https://medium.com/@andrewmarmon/fine-tuned-named-entity-recognition-with-hugging-face-bert-d51d4cb3d7b5
