@@ -6,3 +6,6 @@ parse_with_scipdf.py
 .DS_Store
 __pycache__/
 .ipynb_checkpoints/
+
+
+Annotated_Data/stats.txt
