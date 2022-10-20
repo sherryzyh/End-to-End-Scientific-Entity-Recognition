@@ -8,12 +8,14 @@ class AnnotationAnalyzer:
                  stats_file_path="Annotated_Data/stats.txt"):
         self.annotation_root = annotation_root
         self.total_sent_n = 0
+        self.total_paper_n = 0
         self.entity_sent_stat = defaultdict(lambda: 0)
         self.entity_stat = defaultdict(lambda: 0)
         self.stats_file_path = stats_file_path
 
     def analyze(self):
         total_sent_n = 0
+        total_paper_n = 0
         entity_sent_stat = defaultdict(lambda: 0)
         entity_stat = defaultdict(lambda: 0)
 
@@ -47,13 +49,17 @@ class AnnotationAnalyzer:
                 if label[0] == "B":
                     curr_entity_set.add(label[2:])
                     entity_stat[label[2:]] += 1
+            total_paper_n += 1
 
         self.total_sent_n = total_sent_n
+        self.total_paper_n = total_paper_n
         self.entity_sent_stat = entity_sent_stat
         self.entity_stat = entity_stat
 
     def display(self):
         with open(self.stats_file_path, "w", encoding="utf-8") as f:
+            f.write(f"There are {self.total_paper_n} papers in total.\n")
+            f.write("-" * 40 + "\n")
             f.write(f"There are {self.total_sent_n} sentences in total.\n\n")
             for e, c in self.entity_sent_stat.items():
                 f.write(f"Entity {e:20}#Sent {c:6}\tproportion {c / self.total_sent_n:.4f}\n")
