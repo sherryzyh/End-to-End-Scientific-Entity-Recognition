@@ -7,9 +7,11 @@ class AnnotationAnalyzer:
                  annotation_root="Annotated_Data/annotated_paper",
                  stats_file_path="Annotated_Data/stats.txt"):
         self.annotation_root = annotation_root
-        self.total_sent_n = 0
         self.total_paper_n = 0
+        self.total_sent_n = 0
+        self.avg_sent_len = 0
         self.entity_sent_stat = defaultdict(lambda: 0)
+        self.avg_ensent_len = 0
         self.entity_stat = defaultdict(lambda: 0)
         self.stats_file_path = stats_file_path
 
@@ -18,6 +20,8 @@ class AnnotationAnalyzer:
         total_paper_n = 0
         entity_sent_stat = defaultdict(lambda: 0)
         entity_stat = defaultdict(lambda: 0)
+        total_sent_len = 0
+        total_ensent_len = 0
 
         paper_list = os.listdir(self.annotation_root)
         for paper in paper_list:
@@ -36,8 +40,11 @@ class AnnotationAnalyzer:
                 if len(line) == 0 or len(line.strip().split(" ")) < 2:
                     if len(currsentence) > 0:
                         total_sent_n += 1
+                        currlen = len(currsentence.strip().split(" "))
+                        total_sent_len += currlen
                         if len(curr_entity_set) > 0:
                             entity_sent_stat["ANY"] += 1
+                            total_ensent_len += currlen
                             for e in curr_entity_set:
                                 entity_sent_stat[e] += 1
                     currsentence = ""
@@ -51,9 +58,11 @@ class AnnotationAnalyzer:
                     entity_stat[label[2:]] += 1
             total_paper_n += 1
 
-        self.total_sent_n = total_sent_n
         self.total_paper_n = total_paper_n
+        self.total_sent_n = total_sent_n
+        self.avg_sent_len = total_sent_len / total_sent_n
         self.entity_sent_stat = entity_sent_stat
+        self.avg_ensent_len = total_ensent_len / self.entity_sent_stat["ANY"]
         self.entity_stat = entity_stat
 
     def display(self):
@@ -61,6 +70,8 @@ class AnnotationAnalyzer:
             f.write(f"There are {self.total_paper_n} papers in total.\n")
             f.write("-" * 40 + "\n")
             f.write(f"There are {self.total_sent_n} sentences in total.\n\n")
+            f.write(f"Avg length of sentence {self.avg_sent_len}.\n\n")
+            f.write(f"Avg length of entity sentence {self.avg_ensent_len}.\n\n")
             for e, c in self.entity_sent_stat.items():
                 f.write(f"Entity {e:20}#Sent {c:6}\tproportion {c / self.total_sent_n:.4f}\n")
             f.write("-" * 40 + "\n")
