@@ -43,7 +43,7 @@ class AnnotatedDataAug:
                 if token_label == "\n":
                     # if split point
                     # add the period "." manually (always make sure there is a period at the end)
-                    if cur_sentence[-1] != ".":
+                    if cur_sentence and cur_sentence[-1] != ".":
                         cur_sentence.append(".")
                     sentences.append(" ".join(cur_sentence))
                     sentenceIdx_to_tokenLabelDict[len(sentences)-1] = cur_dict

@@ -34,7 +34,7 @@ from openapi_schema_to_json_schema import to_json_schema
 from dotenv import load_dotenv
 from ratelimit import limits, RateLimitException, sleep_and_retry
 # consts for rate limiting feature
-MAX_CALLS_PER_MINUTE = 30
+MAX_CALLS_PER_MINUTE = 20
 ONE_MINUTE = 60
 class OpenAIClient:
     '''
