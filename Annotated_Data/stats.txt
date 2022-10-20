@@ -1,0 +1,20 @@
+There are 1103 sentences in total.
+
+Entity ANY                 #Sent    211	proportion 0.1913
+Entity MethodName          #Sent     80	proportion 0.0725
+Entity DatasetName         #Sent     24	proportion 0.0218
+Entity TaskName            #Sent     71	proportion 0.0644
+Entity HyperparameterValue #Sent     14	proportion 0.0127
+Entity HyperparameterName  #Sent     19	proportion 0.0172
+Entity MetricName          #Sent     34	proportion 0.0308
+Entity MetricValue         #Sent     18	proportion 0.0163
+----------------------------------------
+There are 359 entities in total.
+
+Entity MethodName          #Occur   108	proportion  0.3008
+Entity DatasetName         #Occur    26	proportion  0.0724
+Entity TaskName            #Occur    91	proportion  0.2535
+Entity HyperparameterValue #Occur    28	proportion  0.0780
+Entity HyperparameterName  #Occur    25	proportion  0.0696
+Entity MetricName          #Occur    48	proportion  0.1337
+Entity MetricValue         #Occur    33	proportion  0.0919

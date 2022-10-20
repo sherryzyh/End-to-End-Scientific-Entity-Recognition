@@ -170,10 +170,10 @@ class RawDataCollector:
                             break
 
     def prep_one_paper(self, read_path, tokenized_path, anno_raw_path):
-        with open(read_path, "r") as f:
+        with open(read_path, "r", encoding='utf-8') as f:
             lines = f.read().splitlines()
 
-        annof = open(anno_raw_path, "w")
+        annof = open(anno_raw_path, "w", encoding='utf-8')
         tokenized_lines = []
         for l in lines:
             # tokenize the line in the paper
@@ -184,7 +184,7 @@ class RawDataCollector:
             annof.write("\n")
         annof.close()
 
-        tokenf = open(tokenized_path, "w")
+        tokenf = open(tokenized_path, "w", encoding='utf-8')
         tokenf.write("\n".join(tokenized_lines))
         tokenf.close()
 
