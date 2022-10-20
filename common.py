@@ -1,16 +1,23 @@
 import os
-import itertools
+from copy import deepcopy
 import pandas as pd
 import numpy as np
 from datasets import Dataset
 from datasets import load_metric
-from transformers import AutoTokenizer
-from transformers import AutoModelForTokenClassification, TrainingArguments, Trainer
-from transformers import DataCollatorForTokenClassification
-import torch
+from transformers import TrainerCallback
 
-label_list = ['O','B-MISC','I-MISC','B-PER','I-PER','B-ORG','I-ORG','B-LOC','I-LOC']
-label_encoding_dict = {'I-PRG': 2,'I-I-MISC': 2, 'I-OR': 6, 'O': 0, 'I-': 0, 'VMISC': 0, 'B-PER': 3, 'I-PER': 4, 'B-ORG': 5, 'I-ORG': 6, 'B-LOC': 7, 'I-LOC': 8, 'B-MISC': 1, 'I-MISC': 2}
+label_list = [
+    'O', 
+    'B-MethodName', 'I-MethodName',
+    'B-HyperparameterName', 'I-HyperparameterName',
+    'B-HyperparameterValue', 'I-HyperparameterValue',
+    'B-MetricName', 'I-MetricName',
+    'B-MetricValue', 'I-MetricValue',
+    'B-TaskName', 'I-TaskName',
+    'B-DatasetName', 'I-DatasetName'
+    ]
+id2label = {i: label for i, label in enumerate(label_list)}
+label2id = {label: i for i, label in enumerate(label_list)}
     
 def get_tokens_and_ner_tags(filename):
     with open(filename, 'r', encoding="utf-8") as f:
@@ -20,6 +27,8 @@ def get_tokens_and_ner_tags(filename):
         for line in lines:
             data = line.split(" ")
             if len(data) < 2:
+                if not current_tokens:
+                    continue
                 tokens.append(current_tokens)
                 entities.append(current_entities)
                 current_tokens, current_entities = [], []
@@ -36,27 +45,32 @@ def get_dataset(directory):
     dataset = Dataset.from_pandas(df)
     return dataset
 
-def tokenize_and_align_labels(tokenizer, examples):
-    tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
+def compute_metrics(p):
+    metric = load_metric("seqeval")
 
-    labels = []
-    for i, label in enumerate(examples[f"ner_tags"]):
-        word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
-        previous_word_idx = None
-        label_ids = []
-        for word_idx in word_ids:  # Set the special tokens to -100.
-            if word_idx is None:
-                label_ids.append(-100)
-            elif word_idx != previous_word_idx:  # Only label the first token of a given word.
-                label_ids.append(label[word_idx])
-            else:
-                label_ids.append(-100)
-            previous_word_idx = word_idx
-        labels.append(label_ids)
+    predictions, labels = p
+    predictions = np.argmax(predictions, axis=2)
 
-    tokenized_inputs["labels"] = labels
-    return tokenized_inputs
+    true_predictions = [[label_list[p] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
+    true_labels = [[label_list[l] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
 
+    results = metric.compute(predictions=true_predictions, references=true_labels)
+    return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
+
+# https://stackoverflow.com/questions/67457480/how-to-get-the-accuracy-per-epoch-or-step-for-the-huggingface-transformers-train
+class CustomCallback(TrainerCallback):
+    
+    def __init__(self, trainer) -> None:
+        super().__init__()
+        self._trainer = trainer
+    
+    def on_epoch_end(self, args, state, control, **kwargs):
+        if control.should_evaluate:
+            control_copy = deepcopy(control)
+            self._trainer.evaluate(eval_dataset=self._trainer.train_dataset, metric_key_prefix="train")
+            return control_copy
+
+'''
 class DataSequence(torch.utils.data.Dataset):
 
     def __init__(self, df, tokenizer, max_len, labels_to_ids, label_all_tokens):
@@ -97,3 +111,4 @@ class DataSequence(torch.utils.data.Dataset):
         batch_labels = self.get_batch_labels(idx)
 
         return batch_data, batch_labels
+'''
