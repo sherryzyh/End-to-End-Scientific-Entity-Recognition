@@ -1,7 +1,8 @@
 {
     "general_args":
         {
-            "transformer": "dslim/bert-base-NER"
+            "transformer": "dslim/bert-base-NER",
+            "system": "baseline"
         },
     "data_args":
         {
@@ -12,7 +13,7 @@
         {
             "seed": 20,
             "num_epochs": 2,
-            "batch_size": 1,
+            "batch_size": 64,
             "learning_rate": 2e-5,
             "weight_decay": 0.01
         }

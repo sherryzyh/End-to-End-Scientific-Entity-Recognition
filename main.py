@@ -8,27 +8,25 @@ from transformers import (
 )
 from argparse import ArgumentParser
 import json
+import os
+import shutil
+from datetime import datetime
+import pytz
 
 from common import get_dataset, compute_metrics, CustomCallback, id2label, label2id
 
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
-
     labels = []
     for i, label in enumerate(examples[f"ner_tags"]):
-        print("label")
-        print(label)
         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
-        print("word_ids")
-        print(word_ids)
-        break
         previous_word_idx = None
         label_ids = []
         for word_idx in word_ids:  # Set the special tokens to -100.
             if word_idx is None:
                 label_ids.append(-100)
             elif word_idx != previous_word_idx:  # Only label the first token of a given word.
-                label_ids.append(label[word_idx])
+                label_ids.append(label2id[label[word_idx]])
             else:
                 label_ids.append(-100)
             previous_word_idx = word_idx
@@ -60,20 +58,25 @@ if __name__ == '__main__':
     
     set_seed(train_args['seed'])
 
+    tz_EST = pytz.timezone('America/New_York')
+    datetime_EST = datetime.now(tz_EST)
+    experiment_name = "_".join([general_args["system"], datetime_EST.strftime("%m-%d_%H-%M-%S")])
+
     # load and preprocess data
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
     tokenizer = AutoTokenizer.from_pretrained(transformer)
     train_dataset = get_dataset(train_data_directory)
     validation_dataset = get_dataset(validation_data_directory)
-    train_dataset = train_dataset.map(tokenize_and_align_labels, batched=False) # change to batched=True
-    validation_dataset = validation_dataset.map(tokenize_and_align_labels, batched=False) # change to batched=True
+    train_dataset = train_dataset.map(tokenize_and_align_labels, batched=True)
+    validation_dataset = validation_dataset.map(tokenize_and_align_labels, batched=True)
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
     
     # train and eval
     # reference for "ignore_mismatched_sizes": https://github.com/huggingface/transformers/issues/14218
     model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id)
-    print(f"number of classes: {model.config.num_labels}")
+    output_dir = "./results/" + experiment_name
     training_args = TrainingArguments(
-        output_dir="./results",
+        output_dir=output_dir,
         evaluation_strategy="epoch",
         #logging_strategy="epoch",
         learning_rate=train_args['learning_rate'],
@@ -107,6 +110,7 @@ if __name__ == '__main__':
     eval_metrics["eval_samples"] = len(validation_dataset)
     trainer.log_metrics("eval", eval_metrics)
     trainer.save_metrics("eval", eval_metrics)
+    shutil.copy2(config_file, output_dir)
 
     # TODO: predict on test dataset (need to add a command line argument for train vs. test)
     
