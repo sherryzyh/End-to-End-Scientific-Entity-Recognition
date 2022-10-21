@@ -1,6 +1,6 @@
 .idea/
 grobid-0.6.2/
-Raw_Data/
+
 parse_with_scipdf.py
 */.DS_Store
 .DS_Store
