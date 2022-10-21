@@ -1,7 +1,7 @@
 import difflib
 import os
 
-label_types = set([
+label_types = [
     'O', 
     'MethodName', 
     'HyperparameterName', 
@@ -10,7 +10,7 @@ label_types = set([
     'MetricValue',
     'TaskName',
     'DatasetName'
-])
+]
     
 def clean(source, filename):
     fixed = 0
