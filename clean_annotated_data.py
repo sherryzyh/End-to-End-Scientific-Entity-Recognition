@@ -30,7 +30,7 @@ def clean(source, filename):
             closest = difflib.get_close_matches(data[1], label_types, 1)
             if not closest:
                 print(f"before - line {i}: {lines[i]}")
-                lines[i] = " ".join([data[0], "O"])
+                lines[i] = " ".join([data[0], "O", "\n"])
                 prev_label = "O"
                 print(f"after: {lines[i]}")
                 fixed += 1
@@ -42,13 +42,13 @@ def clean(source, filename):
             if label == prev_label:
                 if data[1] != "I-" + label:
                     print(f"before - line {i}: {lines[i]}")
-                    lines[i] = " ".join([data[0], "I-" + label])
+                    lines[i] = " ".join([data[0], "I-" + label, "\n"])
                     print(f"after: {lines[i]}")
                     fixed += 1
             else:
                 if data[1] != "B-" + label:
                     print(f"before - line {i}: {lines[i]}")
-                    lines[i] = " ".join([data[0], "B-" + label])
+                    lines[i] = " ".join([data[0], "B-" + label, "\n"])
                     print(f"after: {lines[i]}")
                     fixed += 1
                 prev_label = label
@@ -63,4 +63,4 @@ if __name__ == "__main__":
         print(filename)
         lines = clean(source, filename)
         with open(os.path.join(destination, "cleaned_" + filename), 'w', encoding="utf-8") as f:
-            f.write("\n".join(lines))
+            f.write("".join(lines))
