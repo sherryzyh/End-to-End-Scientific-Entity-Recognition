@@ -1,3 +1,11 @@
+'''
+This file cleans human-annotated data in two ways and prints detected issues to console.
+1. Typo in label
+2. Specifically, any error regarding "B-" vs. "I-"
+Note that any line that does not consist of a token and a label is printed to console 
+to alert the annotator, but not automatically fixed.
+'''
+
 import difflib
 import os
 

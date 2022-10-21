@@ -1,3 +1,8 @@
+'''
+This file runs each experiment. 
+Configs can be specified using command line argument "--config".
+'''
+
 from transformers import (
     DataCollatorForTokenClassification, 
     AutoTokenizer, 

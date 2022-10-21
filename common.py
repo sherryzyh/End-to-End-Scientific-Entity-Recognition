@@ -1,10 +1,12 @@
+'''
+This file contains global variables and methods that are used in experiments.
+'''
+
 import os
-from copy import deepcopy
 import pandas as pd
 import numpy as np
 from datasets import Dataset
 from datasets import load_metric
-from transformers import TrainerCallback
 
 label_list = [
     'O', 
