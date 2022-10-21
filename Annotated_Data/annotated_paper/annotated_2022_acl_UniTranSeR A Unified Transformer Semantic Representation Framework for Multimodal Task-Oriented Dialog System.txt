@@ -60,13 +60,13 @@ interac- O
 tion O
 manner O
 , O
-multimodal B-MethodName
-task I-MethodName
-- I-MethodName
-oriented I-MethodName
-dia- I-MethodName
-log I-MethodName
-system I-MethodName
+multimodal O
+task O
+- O
+oriented O
+dia- O
+log O
+system O
 recently O
 has O
 received O
@@ -277,12 +277,12 @@ dataset O
 1 O
 Introduction O
 The O
-multimodal B-MethodName
-task I-MethodName
-- I-MethodName
-oriented I-MethodName
-dialog I-MethodName
-systems I-MethodName
+multimodal O
+task O
+- O
+oriented O
+dialog O
+systems O
 are O
 designed O
 to O
@@ -440,12 +440,12 @@ remarkable O
 progress O
 , O
 existing O
-multimodal B-MethodName
-task I-MethodName
-- I-MethodName
-oriented I-MethodName
-dialog I-MethodName
-systems I-MethodName
+multimodal O
+task O
+- O
+oriented O
+dialog O
+systems O
 still O
 suf- O
 fer O
@@ -1076,9 +1076,9 @@ Related O
 Work O
 2.1 O
 
-Unimodal B-MethodName
-Dialog I-MethodName
-Systems I-MethodName
+Unimodal O
+Dialog O
+Systems O
 Recent O
 years O
 has O
@@ -1330,9 +1330,9 @@ results O
 . O
 
 2.2 O
-Multimodal B-MethodName
-Dialog I-MethodName
-Systems I-MethodName
+Multimodal O
+Dialog O
+Systems O
 With O
 the O
 ﬂourishing O
@@ -1356,10 +1356,10 @@ poses O
 great O
 demand O
 for O
-mul- B-MethodName
-timodal I-MethodName
-dialog I-MethodName
-systems I-MethodName
+mul- O
+timodal O
+dialog O
+systems O
 . O
 
 However O
@@ -1615,9 +1615,9 @@ generation I-TaskName
 
 Most O
 existing O
-multimodal B-MethodName
-dialog I-MethodName
-systems I-MethodName
+multimodal O
+dialog O
+systems O
 learn O
 intra O
 - O
@@ -6051,7 +6051,7 @@ Liu O
 2020 O
 . O
 
-UNITER B-MethodName
+UNITER O
 : O
 universal O
 image O
@@ -6582,7 +6582,7 @@ Chang O
 2019 O
 . O
 
-Visualbert B-MethodName
+Visualbert O
 : O
 
 A O
@@ -6631,7 +6631,7 @@ Wang O
 2021 O
 . O
 
-UNIMO B-MethodName
+UNIMO O
 : O
 towards O
 uniﬁed O
@@ -6785,7 +6785,7 @@ Lee O
 2019 O
 . O
 
-Vilbert B-MethodName
+Vilbert O
 : O
 Pretraining O
 task O
@@ -6952,7 +6952,7 @@ Fung O
 2018 O
 . O
 
-Mem2seq B-MethodName
+Mem2seq O
 : O
 Effectively O
 incorporating O
@@ -7587,17 +7587,17 @@ Sun O
 2015 O
 . O
 
-Faster B-MethodName
-R I-MethodName
-- I-MethodName
-CNN I-MethodName
+Faster O
+R O
+- O
+CNN O
 : O
 towards O
 real O
 - O
 time O
-object B-TaskName
-detection I-TaskName
+object O
+detection O
 with O
 region O
 proposal O
@@ -8380,8 +8380,8 @@ based O
 context O
 - O
 aware O
-question B-TaskName
-understanding I-TaskName
+question O
+understanding O
 . O
 
 In O

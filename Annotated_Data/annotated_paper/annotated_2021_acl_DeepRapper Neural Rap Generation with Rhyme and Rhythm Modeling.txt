@@ -517,8 +517,8 @@ generation I-TaskName
 mainly O
 focused O
 on O
-lyric B-TaskName
-generation I-TaskName
+lyric O
+generation O
 and O
 some O
 of O
@@ -1366,9 +1366,9 @@ the O
 related O
 background O
 : O
-lyric B-TaskName
-gen- I-TaskName
-eration I-TaskName
+lyric O
+gen- O
+eration O
 , O
 rhyme O
 modeling O
@@ -1377,8 +1377,8 @@ rhythm O
 modeling O
 . O
 
-Lyric B-TaskName
-Generation I-TaskName
+Lyric O
+Generation O
 Broadly O
 speaking O
 , O
@@ -1414,9 +1414,9 @@ al O
 2018 O
 ) O
 , O
-song B-TaskName
-lyric I-TaskName
-generation I-TaskName
+song O
+lyric O
+generation O
 ( O
 Watanabe O
 et O
@@ -1447,8 +1447,8 @@ al O
 ) O
 , O
 general O
-poetry B-TaskName
-generation I-TaskName
+poetry O
+generation O
 ( O
 Zhang O
 and O
@@ -1758,8 +1758,8 @@ generation I-TaskName
 For O
 example O
 , O
-poetry B-TaskName
-generation I-TaskName
+poetry O
+generation O
 ( O
 Lau O
 et O
@@ -1920,8 +1920,8 @@ is O
 usually O
 used O
 in O
-music B-TaskName
-generation I-TaskName
+music O
+generation O
 ( O
 Zhu O
 et O
@@ -1968,8 +1968,8 @@ generation O
 
 Different O
 from O
-music B-TaskName
-generation I-TaskName
+music O
+generation O
 , O
 rap O
 cares O
@@ -2784,15 +2784,15 @@ RAP B-DatasetName
 dataset O
 into O
 the O
-training O
-and O
-validation O
-set O
-with O
-a O
-ratio O
+training B-HyperparameterName
+and I-HyperparameterName
+validation I-HyperparameterName
+set I-HyperparameterName
+with I-HyperparameterName
+a I-HyperparameterName
+ratio I-HyperparameterName
 of O
-4:1 O
+4:1 B-HyperparameterValue
 . O
 
 Since O
@@ -6098,8 +6098,8 @@ Lerch O
 
 Melody- O
 conditioned O
-lyrics B-TaskName
-generation I-TaskName
+lyrics O
+generation O
 with O
 seqgans O
 . O
@@ -6118,8 +6118,8 @@ Cruys O
 . O
 
 Automatic O
-poetry B-TaskName
-generation I-TaskName
+poetry O
+generation O
 from O
 prosaic O
 text O
@@ -6172,9 +6172,9 @@ deep O
 bidirectional O
 transformers O
 for O
-language B-TaskName
-under- I-TaskName
-standing I-TaskName
+language O
+under- O
+standing O
 . O
 
 In O
@@ -6324,9 +6324,9 @@ Hammond O
 2018 O
 . O
 
-Deep B-MethodName
-- I-MethodName
-speare I-MethodName
+Deep O
+- O
+speare O
 : O
 A O
 joint O
@@ -6386,8 +6386,8 @@ Shi O
 Rigid O
 formats O
 controlled O
-text B-TaskName
-generation I-TaskName
+text O
+generation O
 . O
 
 InACL O
@@ -6429,11 +6429,11 @@ tention O
 based O
 autoencoder O
 for O
-rap B-TaskName
-lyrics I-TaskName
-representa- I-TaskName
-tion I-TaskName
-learning I-TaskName
+rap O
+lyrics O
+representa- O
+tion O
+learning O
 . O
 
 In O
@@ -6547,8 +6547,8 @@ Lv O
 2020 O
 . O
 
-Deep B-MethodName
-poetry I-MethodName
+Deep O
+poetry O
 : O
 A O
 chinese O
@@ -6950,14 +6950,14 @@ Liu O
 2020 O
 . O
 
-Popmag B-MethodName
+Popmag O
 : O
 
-Pop B-MethodName
-music I-MethodName
-ac- I-MethodName
-companiment I-MethodName
-generation I-MethodName
+Pop O
+music O
+ac- O
+companiment O
+generation O
 . O
 
 In O
@@ -7000,11 +7000,11 @@ Qin O
 2020 O
 . O
 
-Songmass B-MethodName
+Songmass O
 : O
 Automatic O
-song B-TaskName
-writing I-TaskName
+song O
+writing O
 with O
 pre O
 - O
@@ -7040,20 +7040,20 @@ Liu O
 2019 O
 . O
 
-Mass B-MethodName
+Mass O
 : O
 
-Masked B-MethodName
-sequence I-MethodName
-to I-MethodName
-se- I-MethodName
-quence I-MethodName
-pre I-MethodName
-- I-MethodName
-training I-MethodName
+Masked O
+sequence O
+to O
+se- O
+quence O
+pre O
+- O
+training O
 for O
-language B-TaskName
-generation I-TaskName
+language O
+generation O
 . O
 
 In O
@@ -7216,9 +7216,9 @@ error O
 propaga- O
 tion O
 in O
-neural B-TaskName
-machine I-TaskName
-translation I-TaskName
+neural O
+machine O
+translation O
 : O
 Characteristics O
 of O
@@ -7272,15 +7272,15 @@ Le O
 2019 O
 . O
 
-Xlnet B-MethodName
+Xlnet O
 : O
 
 Generalized O
 autoregressive O
 pretraining O
 for O
-language B-TaskName
-understanding I-TaskName
+language O
+understanding O
 . O
 
 In O
@@ -7306,9 +7306,9 @@ Lapata O
 2014 O
 . O
 
-Chinese B-TaskName
-poetry I-TaskName
-generation I-TaskName
+Chinese O
+poetry O
+generation O
 with O
 recurrent O
 neural O
@@ -7367,7 +7367,7 @@ Li O
 2019 O
 . O
 
-Jiuge B-MethodName
+Jiuge O
 : O
 
 A O
@@ -7440,8 +7440,8 @@ Chen O
 2018 O
 . O
 
-Xiaoice B-MethodName
-band I-MethodName
+Xiaoice O
+band O
 : O
 A O
 melody O
