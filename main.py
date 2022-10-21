@@ -16,9 +16,12 @@ def tokenize_and_align_labels(examples):
 
     labels = []
     for i, label in enumerate(examples[f"ner_tags"]):
+        print("label")
         print(label)
         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+        print("word_ids")
         print(word_ids)
+        break
         previous_word_idx = None
         label_ids = []
         for word_idx in word_ids:  # Set the special tokens to -100.
@@ -62,11 +65,12 @@ if __name__ == '__main__':
     train_dataset = get_dataset(train_data_directory)
     validation_dataset = get_dataset(validation_data_directory)
     train_dataset = train_dataset.map(tokenize_and_align_labels, batched=False) # change to batched=True
-    validation_dataset = validation_dataset.map(tokenize_and_align_labels, batched=True)
+    validation_dataset = validation_dataset.map(tokenize_and_align_labels, batched=False) # change to batched=True
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
     
     # train and eval
-    model = AutoModelForTokenClassification.from_pretrained(transformer, id2label=id2label, label2id=label2id)
+    # reference for "ignore_mismatched_sizes": https://github.com/huggingface/transformers/issues/14218
+    model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id)
     print(f"number of classes: {model.config.num_labels}")
     training_args = TrainingArguments(
         output_dir="./results",
