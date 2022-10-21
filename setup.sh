@@ -1,7 +1,16 @@
+device=${1:-"cpu"}
+cudaversion=${2:-"11.6"}
+
 conda install -c conda-forge pypdf2 -y
 conda install typing_extensions -y
 conda install -c huggingface transformers
 conda install -c huggingface -c conda-forge datasets
-conda install pytorch torchvision torchaudio -c pytorch # specify cuda version on Linux
+if [${device} = "cpu"]; then
+#        echo ${device}
+        conda install pytorch torchvision torchaudio -c pytorch
+else
+#        echo ${device} ${cudaversion}
+        conda install pytorch torchvision torchaudio cudatoolkit=${cudaversion} -c pytorch -c conda-forge
+fi
 python3 -m pip install -r requirement.txt
 python3 -m spacy download en_core_web_sm
