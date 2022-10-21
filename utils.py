@@ -139,6 +139,7 @@ class ACLScraper:
                 f.write(r.content)
             self.cnt += 1
 
+        print(f"DONE {year} {conference}")
 
 class MyTokenizer:
     def __init__(self):

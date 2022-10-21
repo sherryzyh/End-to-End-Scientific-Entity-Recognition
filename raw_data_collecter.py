@@ -11,12 +11,16 @@ class RawDataCollector:
                  pdf_root="pdf_paper",
                  parsed_root="parsed_paper",
                  tokenized_root="tokenized_paper",
-                 annotate_data_root="annotation_paper"):
+                 annotate_data_root="annotation_paper",
+                 collection_mode="supervised"):
         self.pdf_root = os.path.join(raw_data_root, pdf_root)
         self.parsed_root = os.path.join(raw_data_root, parsed_root)
         self.tokenized_root = os.path.join(raw_data_root, tokenized_root)
         self.annotate_data_root = os.path.join(raw_data_root, annotate_data_root)
+        self.collection_mode = collection_mode
 
+        if not os.path.exists(raw_data_root):
+            os.mkdir(raw_data_root)
         if not os.path.exists(self.pdf_root):
             os.mkdir(self.pdf_root)
         if not os.path.exists(self.parsed_root):
@@ -28,24 +32,23 @@ class RawDataCollector:
 
         self.scraper = ACLScraper(self.pdf_root)
         self.tokenizer = MyTokenizer()
+        self.nlp_parser = spacy.load('en_core_web_sm')
 
-    def collect_pdf_papers(self):
-        for year in range(2014, 2015):
-            if year < 2015:
-                self.scraper.getEachConferenceForYear(year, 1)
-            elif 2015 <= year <= 2020:
-                self.scraper.getEachConferenceForYear(year, 5)
-                # self.scraper.getACLsForYear(year, 5)
-                # self.scraper.getNAACLsForYear(year, 5)
-                # self.scraper.getEMNLPsForYear(year, 5)
-            elif year > 2020:
-                self.scraper.getEachConferenceForYear(year, 10)
-                # self.scraper.getACLsForYear(year, 10)
-                # self.scraper.getNAACLsForYear(year, 10)
-                # self.scraper.getEMNLPsForYear(year, 10)
+    def collect_pdf_papers(self, year_start = 2015, year_end = 2023):
+        if self.collection_mode == "supervised":
+            for year in range(year_start, year_end):
+                if year < 2015:
+                    num_limit = 1
+                elif 2015 <= year <= 2020:
+                    num_limit = 5
+                elif year > 2020:
+                    num_limit = 10
+                self.scraper.getEachConferenceForYear(year, num_limit)
+        elif self.collection_mode == "unsupervised":
+            for year in range(year_start, year_end):
+                self.scraper.getEachConferenceForYear(year)
 
     def parse_papers(self, source, destination):
-        nlp_parser = spacy.load('en_core_web_sm')
         for folder in os.listdir(source):
             if not os.path.isdir(os.path.join(source, folder)):
                 continue
@@ -62,7 +65,7 @@ class RawDataCollector:
                             raw_text = page.extract_text()
                             text_list = raw_text.split("\n")
                             text = " ".join(text_list)
-                            tokens = nlp_parser(text)
+                            tokens = self.nlp_parser(text)
                             for sent in tokens.sents:
                                 txt_file.write(sent.text.strip() + "\n")
                         except Exception as e:
@@ -117,11 +120,19 @@ if __name__=="__main__":
     parser.add_argument('--collect', '-c', action='store_true', help="collecting papers from the ACL Anthology")
     parser.add_argument('--parse', '-p', action='store_true', help="reading the pdf papers and parsing it into txt")
     parser.add_argument('--tokenize', '-t', action='store_true', help="tokenizing the parsed paper")
-
+    parser.add_argument('--unsupervised', '-un', action='store_true', help="unsupervised dataset collection")
     args = parser.parse_args()
 
     project_root = os.getcwd()
-    DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Data"))
-    DataCollector.prep_raw_data(tokenize=args.tokenize,
-                                parse=args.parse,
-                                collect=args.tokenize)
+    if args.unsupervised:
+        print("Unsupervised Dataset Collection")
+        DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Unsupervised_Data"),
+                                         collection_mode="unsupervised")
+        DataCollector.prep_raw_data(tokenize=True,
+                                    parse=True,
+                                    collect=True)
+    else:
+        DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Data"))
+        DataCollector.prep_raw_data(tokenize=args.tokenize,
+                                    parse=args.parse,
+                                    collect=args.collect)
