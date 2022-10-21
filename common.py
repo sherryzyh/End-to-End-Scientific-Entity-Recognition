@@ -34,7 +34,7 @@ def get_tokens_and_ner_tags(filename):
                 current_tokens, current_entities = [], []
             elif len(data) == 2:
                 current_tokens.append(data[0])
-                current_entities.append(data[1])
+                current_entities.append(data[1].strip())
         if current_tokens:
             tokens.append(current_tokens)
             entities.append(current_entities)

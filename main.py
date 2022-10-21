@@ -16,7 +16,9 @@ def tokenize_and_align_labels(examples):
 
     labels = []
     for i, label in enumerate(examples[f"ner_tags"]):
+        print(label)
         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+        print(word_ids)
         previous_word_idx = None
         label_ids = []
         for word_idx in word_ids:  # Set the special tokens to -100.
@@ -59,7 +61,7 @@ if __name__ == '__main__':
     tokenizer = AutoTokenizer.from_pretrained(transformer)
     train_dataset = get_dataset(train_data_directory)
     validation_dataset = get_dataset(validation_data_directory)
-    train_dataset = train_dataset.map(tokenize_and_align_labels, batched=True)
+    train_dataset = train_dataset.map(tokenize_and_align_labels, batched=False) # change to batched=True
     validation_dataset = validation_dataset.map(tokenize_and_align_labels, batched=True)
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
     
