@@ -13,12 +13,12 @@ import shutil
 from datetime import datetime
 import pytz
 
-from common import get_dataset, compute_metrics, CustomCallback, id2label, label2id
+from common import get_dataset, compute_metrics, id2label, label2id
 
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
     labels = []
-    for i, label in enumerate(examples[f"ner_tags"]):
+    for i, label in enumerate(examples["ner_tags"]):
         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
         previous_word_idx = None
         label_ids = []
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     training_args = TrainingArguments(
         output_dir=output_dir,
         evaluation_strategy="epoch",
-        #logging_strategy="epoch",
+        logging_strategy="epoch",
         learning_rate=train_args['learning_rate'],
         per_device_train_batch_size=train_args['batch_size'],
         per_device_eval_batch_size=train_args['batch_size'],
@@ -95,7 +95,6 @@ if __name__ == '__main__':
         data_collator=data_collator,
         compute_metrics=compute_metrics
     )
-    #trainer.add_callback(CustomCallback(trainer)) 
 
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
     metrics = train_result.metrics

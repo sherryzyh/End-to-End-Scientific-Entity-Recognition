@@ -63,19 +63,7 @@ def compute_metrics(p):
     results = metric.compute(predictions=true_predictions, references=true_labels)
     return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
-# https://stackoverflow.com/questions/67457480/how-to-get-the-accuracy-per-epoch-or-step-for-the-huggingface-transformers-train
-class CustomCallback(TrainerCallback):
-    
-    def __init__(self, trainer) -> None:
-        super().__init__()
-        self._trainer = trainer
-    
-    def on_epoch_end(self, args, state, control, **kwargs):
-        if control.should_evaluate:
-            control_copy = deepcopy(control)
-            self._trainer.evaluate(eval_dataset=self._trainer.train_dataset, metric_key_prefix="train")
-            return control_copy
-
+# not used
 def get_tokens_and_ner_tags_by_sentence(filename):
     with open(filename, 'r', encoding="utf-8") as f:
         lines = f.readlines()
