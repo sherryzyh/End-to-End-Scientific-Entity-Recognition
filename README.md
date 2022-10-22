@@ -11,6 +11,9 @@ Environment setup:
 3. Run setup script to install all required libraries
    `bash setup.sh`
 
+4. Install OpenAI
+   `pip install openai`
+
 ### Environment Variables Setup
 1. Create the `.env` file in the project root.   
 2. Configure the necessary environment variables in it, e.g.
