@@ -10,6 +10,7 @@ import os
 from bs4 import BeautifulSoup
 import json
 import requests
+from collections import defaultdict
 from tqdm import tqdm
 
 
@@ -162,6 +163,44 @@ class MyTokenizer:
         token_label_str = "".join([x.text + " O\n" for x in tokens])
         return token_space_str, token_label_str
 
+class EntitySentence:
+    def __init__(self):
+        self.sentence = ""
+        self.entity_set = set()
+        self.entity_stat = defaultdict(lambda: 0)
+        self.isEnd = False
+
+    def __len__(self):
+        return len(self.sentence)
+
+    def clear(self):
+        self.sentence = ""
+        self.entity_set = set()
+        self.entity_stat = defaultdict(lambda: 0)
+        self.isEnd = False
+
+    def readLine(self, line):
+        if len(line) == 0 or len(line.strip().split(" ")) < 2:
+            self.isEnd = True
+        else:
+            self.isEnd = False
+            token, label = line.strip().split(" ")
+            self.sentence += " " + token
+            if label[0] == "B":
+                self.entity_set.add(label[2:])
+                self.entity_stat[label[2:]] += 1
+
+    def containEntity(self):
+        if len(self.entity_set) > 0:
+            return True
+        else:
+            return False
+
+    def tokenCount(self):
+        return len(self.sentence.strip().split(" "))
+
+    def entityCount(self, entity):
+        return self.entity_stat[entity]
 
 
 #

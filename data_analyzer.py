@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+from utils import EntitySentence
 # TODO: the length statistic of different entities
 
 class AnnotationAnalyzer:
@@ -10,7 +11,14 @@ class AnnotationAnalyzer:
         self.total_paper_n = 0
         self.total_sent_n = 0
         self.avg_sent_len = 0
-        self.entity_sent_stat = defaultdict(lambda: 0)
+        self.entity_sent_stat = {"ANY": 0,
+                                 "MethodName": 0,
+                                 "HyperparameterName": 0,
+                                 "HyperparameterValue": 0,
+                                 "MetricName": 0,
+                                 "MetricValue": 0,
+                                 "TaskName": 0,
+                                 "DatasetName": 0}
         self.avg_ensent_len = 0
         self.entity_stat = defaultdict(lambda: 0)
         self.stats_file_path = stats_file_path
@@ -18,8 +26,6 @@ class AnnotationAnalyzer:
     def analyze(self):
         total_sent_n = 0
         total_paper_n = 0
-        entity_sent_stat = defaultdict(lambda: 0)
-        entity_stat = defaultdict(lambda: 0)
         total_sent_len = 0
         total_ensent_len = 0
 
@@ -33,37 +39,33 @@ class AnnotationAnalyzer:
                 print(f"An exception occurred when reading << {paper} >>")
                 continue
 
-            currsentence = ""
-            curr_entity_set = set()
+            entitysentence = EntitySentence()
             for line in lines:
-
-                if len(line) == 0 or len(line.strip().split(" ")) < 2:
-                    if len(currsentence) > 0:
+                entitysentence.readLine(line)
+                if entitysentence.isEnd:
+                    if len(entitysentence) > 0:
+                        # update non-empty sentence
                         total_sent_n += 1
-                        currlen = len(currsentence.strip().split(" "))
-                        total_sent_len += currlen
-                        if len(curr_entity_set) > 0:
-                            entity_sent_stat["ANY"] += 1
-                            total_ensent_len += currlen
-                            for e in curr_entity_set:
-                                entity_sent_stat[e] += 1
-                    currsentence = ""
-                    curr_entity_set = set()
-                    continue
+                        total_sent_len += entitysentence.tokenCount()
 
-                token, label = line.strip().split(" ")
-                currsentence = currsentence + " " + token
-                if label[0] == "B":
-                    curr_entity_set.add(label[2:])
-                    entity_stat[label[2:]] += 1
+                    if entitysentence.containEntity():
+                        # update entity statistics
+                        self.entity_sent_stat["ANY"] += 1
+                        for entity in self.entity_sent_stat.keys():
+                            self.entity_stat[entity] += entitysentence.entityCount(entity)
+                            if entitysentence.entityCount(entity) > 0:
+                                self.entity_sent_stat[entity] += 1
+
+                        total_ensent_len += entitysentence.tokenCount()
+                    entitysentence.clear()
+
+
             total_paper_n += 1
 
         self.total_paper_n = total_paper_n
         self.total_sent_n = total_sent_n
         self.avg_sent_len = total_sent_len / total_sent_n
-        self.entity_sent_stat = entity_sent_stat
         self.avg_ensent_len = total_ensent_len / self.entity_sent_stat["ANY"]
-        self.entity_stat = entity_stat
 
     def display(self):
         with open(self.stats_file_path, "w", encoding="utf-8") as f:
