@@ -65,7 +65,10 @@ def clean(source, filename):
             
 if __name__ == "__main__":
     source = 'Annotated_Data/annotated_paper'
-    destination = 'cleaned_data'
+    destination = 'Annotated_Data/cleaned_data'
+
+    if not os.path.exists(destination):
+        os.mkdir(destination)
 
     for filename in os.listdir(source):
         print(filename)

@@ -180,11 +180,16 @@ class EntitySentence:
         self.isEnd = False
 
     def readLine(self, line):
-        if len(line) == 0 or len(line.strip().split(" ")) < 2:
+        if len(line) == 0:
             self.isEnd = True
         else:
             self.isEnd = False
-            token, label = line.strip().split(" ")
+            line = line.strip().split(" ")
+            if len(line) < 2:
+                token = " "
+                label = line[0]
+            else:
+                token, label = line
             self.sentence += " " + token
             if label[0] == "B":
                 self.entity_set.add(label[2:])

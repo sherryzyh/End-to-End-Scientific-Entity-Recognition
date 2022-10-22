@@ -1,4 +1,5 @@
 import os
+import argparse
 from collections import defaultdict
 from utils import EntitySentence
 # TODO: the length statistic of different entities
@@ -51,7 +52,7 @@ class AnnotationAnalyzer:
                     if entitysentence.containEntity():
                         # update entity statistics
                         self.entity_sent_stat["ANY"] += 1
-                        for entity in self.entity_sent_stat.keys():
+                        for entity in entitysentence.entity_set:
                             self.entity_stat[entity] += entitysentence.entityCount(entity)
                             if entitysentence.entityCount(entity) > 0:
                                 self.entity_sent_stat[entity] += 1
@@ -65,7 +66,8 @@ class AnnotationAnalyzer:
         self.total_paper_n = total_paper_n
         self.total_sent_n = total_sent_n
         self.avg_sent_len = total_sent_len / total_sent_n
-        self.avg_ensent_len = total_ensent_len / self.entity_sent_stat["ANY"]
+        if self.entity_sent_stat["ANY"] > 0:
+            self.avg_ensent_len = total_ensent_len / self.entity_sent_stat["ANY"]
 
     def display(self):
         with open(self.stats_file_path, "w", encoding="utf-8") as f:
@@ -86,8 +88,15 @@ class AnnotationAnalyzer:
 
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test', '-t', action='store_true', help="test")
+    args = parser.parse_args()
+
     project_root = os.getcwd()
-    annotation_root = os.path.join(project_root, "Annotated_Data", "annotated_paper")
+    if args.test:
+        annotation_root = os.path.join(project_root, "Annotated_Data", "test_annotation")
+    else:
+        annotation_root = os.path.join(project_root, "Annotated_Data", "cleaned_data")
     stats_file_path = os.path.join(project_root, "Annotated_Data", "stats.txt")
     analyzer = AnnotationAnalyzer(annotation_root, stats_file_path)
     analyzer.analyze()
