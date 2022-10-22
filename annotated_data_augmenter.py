@@ -62,7 +62,7 @@ class AnnotatedDataAug:
                         #     print(token_label.split(" ")[0])
                         token_label = token_label.strip()
                         token, label = token_label.split(" ")
-                        cur_dict[token] = label[:-1]
+                        cur_dict[token] = label
                         if label[0] == "B":
                             label_set.add(label)
                     cur_sentence.append(token)
@@ -72,9 +72,11 @@ class AnnotatedDataAug:
     
     def parapharase_and_relabel(self, sentences, sentenceIdx_to_tokenLabelDict):
         paraphrased_result_lines = []
+        print(sentenceIdx_to_tokenLabelDict)
         for idx, sentence in enumerate(sentences):
             parapharased_sentence = self.openai_client.getParaphrasedSentence(sentence)
             parapharased_tokens = self.tokenizer.get_tokens(parapharased_sentence)
+            print(idx)
             original_tokenLabelDict = sentenceIdx_to_tokenLabelDict[idx]
             para_token_label_lst = []
             for x in parapharased_tokens:
