@@ -163,6 +163,15 @@ class MyTokenizer:
         token_label_str = "".join([x.text + " O\n" for x in tokens])
         return token_space_str, token_label_str
 
+"""
+    Usage:
+        init before starting reading lines from the cleaned annotated paper
+        use EntitySentence.readLine(line) read each line
+        if EntitySentence.isEnd:
+            use EntitySentence.containEntity() to check if current sentence contains entity
+            use EntitySentence.entityCount(entity) to get the count of 'entity' in current sentence
+            use EntitySentence.clear() to clear current information for next one
+"""
 class EntitySentence:
     def __init__(self):
         self.sentence = ""
@@ -171,7 +180,7 @@ class EntitySentence:
         self.isEnd = False
 
     def __len__(self):
-        return len(self.sentence)
+        return len(self.sentence.strip().split(" "))
 
     def clear(self):
         self.sentence = ""
@@ -200,9 +209,6 @@ class EntitySentence:
             return True
         else:
             return False
-
-    def tokenCount(self):
-        return len(self.sentence.strip().split(" "))
 
     def entityCount(self, entity):
         return self.entity_stat[entity]
