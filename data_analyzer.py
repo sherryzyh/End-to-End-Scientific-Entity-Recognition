@@ -47,7 +47,7 @@ class AnnotationAnalyzer:
                     if len(entitysentence) > 0:
                         # update non-empty sentence
                         total_sent_n += 1
-                        total_sent_len += entitysentence.tokenCount()
+                        total_sent_len += len(entitysentence)
 
                     if entitysentence.containEntity():
                         # update entity statistics
