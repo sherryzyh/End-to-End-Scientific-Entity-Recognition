@@ -48,7 +48,7 @@ def clean(source, filename):
                 prev_label = label
                 continue
             if label == prev_label:
-                if data[1] != "I-" + label:
+                if data[1] != "I-" + label and data[1] != "B-" + label:
                     print(f"before - line {i}: {lines[i]}")
                     lines[i] = " ".join([data[0], "I-" + label, "\n"])
                     print(f"after: {lines[i]}")
