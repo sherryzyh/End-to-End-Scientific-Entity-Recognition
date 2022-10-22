@@ -14,9 +14,9 @@ class AnnotatedDataAug:
     def __init__(self, working_dir = "./Annotated_Data"):
         os.chdir(working_dir)
         # if change the dir name of aug papers in Annotated Data we also need to change the parameters here
-        self.aug_dir = "./annotated_paper_aug/"
+        self.aug_dir = "./clean_data_aug/"
         # if change the dir name of raw papers in Annotated Data we also need to change the parameters here
-        self.raw_dir = "./annotated_paper/"
+        self.raw_dir = "./cleaned_data/"
         self.openai_client = utils.OpenAIClient()
         self.tokenizer = utils.MyTokenizer()
     
@@ -38,24 +38,33 @@ class AnnotatedDataAug:
             lines = f.readlines()
             # cur maintainer
             cur_dict = {}
+            label_set = set()
             cur_sentence = []
             for idx, token_label in enumerate(lines):
                 if token_label == "\n":
                     # if split point
                     # add the period "." manually (always make sure there is a period at the end)
-                    if cur_sentence and cur_sentence[-1] != ".":
-                        cur_sentence.append(".")
-                    sentences.append(" ".join(cur_sentence))
-                    sentenceIdx_to_tokenLabelDict[len(sentences)-1] = cur_dict
+                    # if do not want only to paraphase labeled data, remove the condition
+                    if len(label_set) > 0:
+                        if cur_sentence and cur_sentence[-1] != ".":
+                            cur_sentence.append(".")
+                        sentences.append(" ".join(cur_sentence))
+                        sentenceIdx_to_tokenLabelDict[len(sentences)-1] = cur_dict
                     cur_dict = {}
                     cur_sentence = []
+                    label_set = set()
                     continue
                 else:
                     # o.w.
                     token = " "
                     if token_label[0] != " ":
+                        # if len(token_label.split(" ")) > 2:
+                        #     print(token_label.split(" ")[0])
+                        token_label = token_label.strip()
                         token, label = token_label.split(" ")
                         cur_dict[token] = label[:-1]
+                        if label[0] == "B":
+                            label_set.add(label)
                     cur_sentence.append(token)
             if cur_sentence:
                 sentences.append(" ".join(cur_sentence))
@@ -87,6 +96,8 @@ class AnnotatedDataAug:
         cnt = 0
         print(f"Already augemented files: {auged_files}" )
         for file in os.listdir(raw_dir):
+            if file and file[0] == ".":
+                continue
             print(f"Total Augmented File Cnt: {cnt}")
             aug_file = f"aug_{file}"
             print(f"Augmenting {aug_file}...")
