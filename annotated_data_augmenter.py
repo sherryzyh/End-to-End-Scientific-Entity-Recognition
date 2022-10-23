@@ -19,6 +19,8 @@ class AnnotatedDataAug:
         self.raw_dir = "./cleaned_data/"
         self.openai_client = utils.OpenAIClient()
         self.tokenizer = utils.MyTokenizer()
+        self.tmp_name = "ABCDEFG"
+        self.tmp_len = len(self.tmp_name)
     
     def recover_and_label(self, annotated_tokenized_paper: str):
         """
@@ -34,12 +36,15 @@ class AnnotatedDataAug:
         # global result
         sentences = []
         sentenceIdx_to_tokenLabelDict = {} # map the index of the sentence to the corresponding token->label dict
+        sentenceIdx_to_subNameDict = {} # map the index of the sentence to the corresponnding cnt->(original name, original label) for all the non-O entities
         with open(annotated_tokenized_paper) as f:
             lines = f.readlines()
             # cur maintainer
             cur_dict = {}
             label_set = set()
             cur_sentence = []
+            sub_dict = {}
+            cnt = 0
             for idx, token_label in enumerate(lines):
                 if token_label == "\n":
                     # if split point
@@ -50,43 +55,67 @@ class AnnotatedDataAug:
                             cur_sentence.append(".")
                         sentences.append(" ".join(cur_sentence))
                         sentenceIdx_to_tokenLabelDict[len(sentences)-1] = cur_dict
+                        sentenceIdx_to_subNameDict[len(sentences)-1] = sub_dict
                     cur_dict = {}
                     cur_sentence = []
                     label_set = set()
+                    sub_dict = {} 
+                    cnt = 0
                     continue
                 else:
                     # o.w.
                     token = " "
                     if token_label[0] != " ":
-                        # if len(token_label.split(" ")) > 2:
-                        #     print(token_label.split(" ")[0])
                         token_label = token_label.strip()
-                        token, label = token_label.split(" ")
+                        token_label_lst = token_label.split()
+                        if len(token_label_lst) < 2:
+                            continue
+                        token, label = token_label_lst[0], token_label_lst[1]
                         cur_dict[token] = label
                         if label[0] == "B":
                             label_set.add(label)
+                            sub_dict[cnt] = [(token, label)]
+                            tmp = f"{self.tmp_name}{cnt}"
+                            cur_sentence.append(tmp)
+                            cnt += 1
+                            continue
+                        if label[0] == "I":
+                            sub_dict[cnt - 1].append((token, label))
+                            continue
                     cur_sentence.append(token)
             if cur_sentence:
                 sentences.append(" ".join(cur_sentence))
-        return sentences, sentenceIdx_to_tokenLabelDict
+                sentenceIdx_to_tokenLabelDict[len(sentences)-1] = cur_dict
+                sentenceIdx_to_subNameDict[len(sentences)-1] = sub_dict
+        return sentences, sentenceIdx_to_tokenLabelDict, sentenceIdx_to_subNameDict
     
-    def parapharase_and_relabel(self, sentences, sentenceIdx_to_tokenLabelDict):
+    def parapharase_and_relabel(self, sentences, sentenceIdx_to_tokenLabelDict, sentenceIdx_to_subNameDict):
         paraphrased_result_lines = []
-        print(sentenceIdx_to_tokenLabelDict)
         for idx, sentence in enumerate(sentences):
             parapharased_sentence = self.openai_client.getParaphrasedSentence(sentence)
             parapharased_tokens = self.tokenizer.get_tokens(parapharased_sentence)
-            print(idx)
             original_tokenLabelDict = sentenceIdx_to_tokenLabelDict[idx]
+            original_nameDict = sentenceIdx_to_subNameDict[idx]
             para_token_label_lst = []
             for x in parapharased_tokens:
                 lower_x = x.text.lower().strip()
-                for key, label in original_tokenLabelDict.items():
-                    if key.lower().strip() == lower_x and label != "O":
-                        para_token_label_lst.append(f"{key} {label}\n")
-                        break 
+                if len(lower_x) > self.tmp_len and lower_x[:self.tmp_len] == self.tmp_name.lower() and lower_x[self.tmp_len:].isdigit():
+                    tmp_idx = int(lower_x[self.tmp_len:])
+                    if tmp_idx in original_nameDict:
+                        tmp_name_label_lst = original_nameDict[tmp_idx]
+                        for name, label in tmp_name_label_lst:
+                            para_token_label_lst.append(f"{name} {label}\n")
+                    else:
+                        para_token_label_lst.append(f"{x} O\n")
                 else:
-                    para_token_label_lst.append(x.text + " O\n")
+                    para_token_label_lst.append(f"{x} O\n")
+                    
+                # for key, label in original_tokenLabelDict.items():
+                #     if key.lower().strip() == lower_x and label != "O":
+                #         para_token_label_lst.append(f"{key} {label}\n")
+                #         break 
+                # else:
+                #     para_token_label_lst.append(x.text + " O\n")
             para_token_label_str = "".join(para_token_label_lst)
             paraphrased_result_lines.append(para_token_label_str)
         return paraphrased_result_lines
@@ -108,8 +137,8 @@ class AnnotatedDataAug:
                 continue
             
             print(f"Paraphrase and relabelling from OpenAI...")
-            sentences, sentenceIdx_to_tokenLabelDict = self.recover_and_label(raw_dir + file)
-            paraphrased_result_lines = self.parapharase_and_relabel(sentences, sentenceIdx_to_tokenLabelDict)
+            sentences, sentenceIdx_to_tokenLabelDict, sentenceIdx_to_subNameDict = self.recover_and_label(raw_dir + file)
+            paraphrased_result_lines = self.parapharase_and_relabel(sentences, sentenceIdx_to_tokenLabelDict, sentenceIdx_to_subNameDict)
             
             print(f"Write the result to file...")
             aug_file_path = os.path.join(aug_dir, aug_file)
