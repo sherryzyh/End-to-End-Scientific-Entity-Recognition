@@ -51,9 +51,10 @@ def get_tokens_and_ner_tags_by_seq_len(filename):
     df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
   
-def get_dataset(directory):
+def get_dataset(directory, num_sentence):
     label_count = {label: 0 for label in label_list}
-    df = pd.concat([get_tokens_and_ner_tags(os.path.join(directory, filename), label_count) for filename in os.listdir(directory)]).reset_index().drop('index', axis=1)
+    df = pd.concat([get_tokens_and_ner_tags(os.path.join(directory, filename), label_count, num_sentence) \
+        for filename in os.listdir(directory)]).reset_index().drop('index', axis=1)
     dataset = Dataset.from_pandas(df)
     total_labels = sum(label_count.values())
     print(directory)
