@@ -36,6 +36,7 @@ def tokenize_and_align_labels(examples):
                 label_ids.append(-100)
             previous_word_idx = word_idx
         labels.append(label_ids)
+        seq_len_stats.append(len(word_ids))
 
     tokenized_inputs["labels"] = labels
     return tokenized_inputs
@@ -59,6 +60,7 @@ if __name__ == '__main__':
     
     train_data_directory = data_args['train_data']
     validation_data_directory = data_args['validation_data']
+    num_sentence = data_args['num_sentence_per_seq']
     transformer = general_args['transformer']
     
     set_seed(train_args['seed'])
@@ -69,12 +71,22 @@ if __name__ == '__main__':
 
     # load and preprocess data
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    seq_len_stats = []
     tokenizer = AutoTokenizer.from_pretrained(transformer)
-    train_dataset = get_dataset(train_data_directory)
-    validation_dataset = get_dataset(validation_data_directory)
+    train_dataset = get_dataset(train_data_directory, num_sentence)
+    validation_dataset = get_dataset(validation_data_directory, num_sentence)
     train_dataset = train_dataset.map(tokenize_and_align_labels, batched=True)
     validation_dataset = validation_dataset.map(tokenize_and_align_labels, batched=True)
-    data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
+    not_truncated, may_be_truncated = 0, 0
+    for i in seq_len_stats:
+        if i < 512:
+            not_truncated += 1
+        else:
+            may_be_truncated += 1
+    print(f"not truncated: {not_truncated}")
+    print(f"may be truncated: {may_be_truncated}")
+    
+"""     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
     
     # train and eval
     # reference for "ignore_mismatched_sizes": https://github.com/huggingface/transformers/issues/14218
@@ -116,5 +128,5 @@ if __name__ == '__main__':
     trainer.save_metrics("eval", eval_metrics)
     shutil.copy2(config_file, output_dir)
 
-    # TODO: predict on test dataset (need to add a command line argument for train vs. test)
+    # TODO: predict on test dataset (need to add a command line argument for train vs. test) """
     

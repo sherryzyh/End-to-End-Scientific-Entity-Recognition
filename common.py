@@ -7,6 +7,9 @@ import pandas as pd
 import numpy as np
 from datasets import Dataset
 from datasets import load_metric
+import torch
+from torch import nn
+from transformers import Trainer
 
 label_list = [
     'O', 
@@ -22,7 +25,7 @@ id2label = {i: label for i, label in enumerate(label_list)}
 label2id = {label: i for i, label in enumerate(label_list)}
 seq_len = 512
     
-def get_tokens_and_ner_tags(filename):
+def get_tokens_and_ner_tags_by_seq_len(filename):
     with open(filename, 'r', encoding="utf-8") as f:
         lines = f.readlines()
         tokens, entities = [], []
@@ -49,8 +52,13 @@ def get_tokens_and_ner_tags(filename):
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
   
 def get_dataset(directory):
-    df = pd.concat([get_tokens_and_ner_tags(os.path.join(directory, filename)) for filename in os.listdir(directory)]).reset_index().drop('index', axis=1)
+    label_count = {label: 0 for label in label_list}
+    df = pd.concat([get_tokens_and_ner_tags(os.path.join(directory, filename), label_count) for filename in os.listdir(directory)]).reset_index().drop('index', axis=1)
     dataset = Dataset.from_pandas(df)
+    total_labels = sum(label_count.values())
+    print(directory)
+    for label, count in label_count.items():
+        print(f"{label}: {count / total_labels}")
     return dataset
 
 def compute_metrics(p):
@@ -65,25 +73,53 @@ def compute_metrics(p):
     results = metric.compute(predictions=true_predictions, references=true_labels)
     return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
-# not used
-def get_tokens_and_ner_tags_by_sentence(filename):
+def get_tokens_and_ner_tags(filename, label_count, num_sentence):
     with open(filename, 'r', encoding="utf-8") as f:
         lines = f.readlines()
         tokens, entities = [], []
         current_tokens, current_entities = [], []
+        sentence_tokens, sentence_entities = [], []
+        entity_sentence_count = 0
+        entity_flag = False
         for line in lines:
             data = line.split(" ")
             if len(data) < 2:
-                if not current_tokens:
+                if not sentence_tokens:
                     continue
-                tokens.append(current_tokens)
-                entities.append(current_entities)
-                current_tokens, current_entities = [], []
+                # if the current sentence contains any (non-O) entity
+                if entity_flag:
+                    current_tokens.extend(sentence_tokens)
+                    current_entities.extend(sentence_entities)
+                    entity_sentence_count += 1
+                    entity_flag = False
+                    # if enough entity sentences have been accumulated for a data entry
+                    if entity_sentence_count == num_sentence:
+                        tokens.append(current_tokens)
+                        entities.append(current_entities)
+                        current_tokens, current_entities = [], []
+                        entity_sentence_count = 0
+                sentence_tokens, sentence_entities = [], []
             elif len(data) == 2:
-                current_tokens.append(data[0])
-                current_entities.append(data[1].strip())
-        if current_tokens:
+                sentence_tokens.append(data[0])
+                label = data[1].strip()
+                sentence_entities.append(label)
+                label_count[label] += 1
+                if label != "O":
+                    entity_flag = True
+        # if any token remains and a (non-O) entity is contained
+        if current_tokens and entity_flag:
             tokens.append(current_tokens)
             entities.append(current_entities)
     df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+
+class CustomTrainer(Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False):
+        labels = inputs.get("labels")
+        # forward pass
+        outputs = model(**inputs)
+        logits = outputs.get("logits")
+        # compute custom loss (suppose one has 3 labels with different weights)
+        loss_fct = nn.CrossEntropyLoss(weight=torch.tensor([1.0, 2.0, 3.0]))
+        loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+        return (loss, outputs) if return_outputs else loss

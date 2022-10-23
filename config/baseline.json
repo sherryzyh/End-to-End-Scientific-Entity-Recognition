@@ -7,7 +7,8 @@
     "data_args":
         {
             "train_data": "train_data",
-            "validation_data": "validation_data"
+            "validation_data": "validation_data",
+            "num_sentence_per_seq": 5
         },
     "train_args":
         {
