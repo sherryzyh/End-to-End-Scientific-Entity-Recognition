@@ -1,32 +1,3 @@
-Proceedings O
-of O
-NAACL O
-- O
-HLT O
-2018 O
-, O
-pages O
-37–46 O
-New O
-Orleans O
-, O
-Louisiana O
-, O
-June O
-1 O
-- O
-6 O
-, O
-2018 O
-. O
-
-c O
-
-2018 O
-Association O
-for O
-Computational O
-Linguistics O
 A O
 Deep B-MethodName
 Generative I-MethodName
