@@ -57,7 +57,7 @@ class AnnotationAnalyzer:
                             if entitysentence.entityCount(entity) > 0:
                                 self.entity_sent_stat[entity] += 1
 
-                        total_ensent_len += entitysentence.tokenCount()
+                        total_ensent_len += len(entitysentence)
                     entitysentence.clear()
 
 
