@@ -23,43 +23,11 @@ label_list = [
     ]
 id2label = {i: label for i, label in enumerate(label_list)}
 label2id = {label: i for i, label in enumerate(label_list)}
-seq_len = 512
-    
-def get_tokens_and_ner_tags_by_seq_len(filename):
-    with open(filename, 'r', encoding="utf-8") as f:
-        lines = f.readlines()
-        tokens, entities = [], []
-        token_counter = 0
-        current_tokens, current_entities = [], []
-        for line in lines:
-            data = line.split(" ")
-            if len(data) != 2:
-                continue
-            if token_counter < seq_len:
-                current_tokens.append(data[0])
-                current_entities.append(data[1].strip())
-                token_counter += 1
-            else:
-                tokens.append(current_tokens)
-                entities.append(current_entities)
-                token_counter = 0
-                current_tokens, current_entities = [], []
-        if current_tokens:
-            tokens.append(current_tokens)
-            entities.append(current_entities)
-            
-    df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
-    return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
   
-def get_dataset(directory, num_sentence):
-    label_count = {label: 0 for label in label_list}
-    df = pd.concat([get_tokens_and_ner_tags(os.path.join(directory, filename), label_count, num_sentence) \
+def get_dataset(directory, method, **kwargs):
+    df = pd.concat([get_tokens_and_ner_tags(os.path.join(directory, filename), method, **kwargs) \
         for filename in os.listdir(directory)]).reset_index().drop('index', axis=1)
     dataset = Dataset.from_pandas(df)
-    total_labels = sum(label_count.values())
-    print(directory)
-    for label, count in label_count.items():
-        print(f"{label}: {count / total_labels}")
     return dataset
 
 def compute_metrics(p):
@@ -74,7 +42,15 @@ def compute_metrics(p):
     results = metric.compute(predictions=true_predictions, references=true_labels)
     return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
-def get_tokens_and_ner_tags(filename, label_count, num_sentence):
+def get_tokens_and_ner_tags(filename, method, **kwargs):
+    if method == "by_seq_len":
+        return get_tokens_and_ner_tags_by_seq_len(filename, **kwargs)
+    if method == "entity_sentence_only":
+        return get_tokens_and_ner_tags_entity_sentence_only(filename, **kwargs)
+    if method == "sample_contains_entity":
+        return get_tokens_and_ner_tags_sample_contains_entity(filename, **kwargs)
+
+def get_tokens_and_ner_tags_entity_sentence_only(filename, num_sentence):
     with open(filename, 'r', encoding="utf-8") as f:
         lines = f.readlines()
         tokens, entities = [], []
@@ -104,7 +80,6 @@ def get_tokens_and_ner_tags(filename, label_count, num_sentence):
                 sentence_tokens.append(data[0])
                 label = data[1].strip()
                 sentence_entities.append(label)
-                label_count[label] += 1
                 if label != "O":
                     entity_flag = True
         # if any token remains and a (non-O) entity is contained
@@ -114,13 +89,74 @@ def get_tokens_and_ner_tags(filename, label_count, num_sentence):
     df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
 
+def get_tokens_and_ner_tags_sample_contains_entity(filename, num_sentence):
+    with open(filename, 'r', encoding="utf-8") as f:
+        lines = f.readlines()
+        tokens, entities = [], []
+        current_tokens, current_entities = [], []
+        sentence_count = 0
+        entity_flag = False
+        for line in lines:
+            data = line.split(" ")
+            if len(data) < 2:
+                if not current_tokens:
+                    continue
+                sentence_count += 1
+                # if enough sentences have been accumulated for a data entry
+                if sentence_count == num_sentence:
+                    if entity_flag:
+                        tokens.append(current_tokens)
+                        entities.append(current_entities)
+                        entity_flag = False
+                    current_tokens, current_entities = [], []
+                    sentence_count = 0
+            elif len(data) == 2:
+                current_tokens.append(data[0])
+                label = data[1].strip()
+                current_entities.append(label)
+                if label != "O":
+                    entity_flag = True
+        # if any token remains and a (non-O) entity is contained
+        if current_tokens and entity_flag:
+            tokens.append(current_tokens)
+            entities.append(current_entities)
+    df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+    return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+
+def get_tokens_and_ner_tags_by_seq_len(filename, seq_len):
+    with open(filename, 'r', encoding="utf-8") as f:
+        lines = f.readlines()
+        tokens, entities = [], []
+        token_counter = 0
+        current_tokens, current_entities = [], []
+        for line in lines:
+            data = line.split(" ")
+            if len(data) != 2:
+                continue
+            if token_counter < seq_len:
+                current_tokens.append(data[0])
+                current_entities.append(data[1].strip())
+                token_counter += 1
+            else:
+                tokens.append(current_tokens)
+                entities.append(current_entities)
+                token_counter = 0
+                current_tokens, current_entities = [], []
+        if current_tokens:
+            tokens.append(current_tokens)
+            entities.append(current_entities)
+            
+    df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+    return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         labels = inputs.get("labels")
         # forward pass
         outputs = model(**inputs)
         logits = outputs.get("logits")
-        # compute custom loss (suppose one has 3 labels with different weights)
-        loss_fct = nn.CrossEntropyLoss(weight=torch.tensor([1.0, 2.0, 3.0]))
+        # compute weighted cross entropy loss
+        loss_fct = nn.CrossEntropyLoss(weight=torch.tensor([1.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, \
+        100.0, 100.0, 100.0, 100.0, 100.0, 100.0]))
         loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
         return (loss, outputs) if return_outputs else loss
