@@ -43,12 +43,43 @@ def compute_metrics(p):
     return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
 def get_tokens_and_ner_tags(filename, method, **kwargs):
-    if method == "by_seq_len":
-        return get_tokens_and_ner_tags_by_seq_len(filename, **kwargs)
+    if method == "by_num_sentence":
+        return get_tokens_and_ner_tags_by_num_sentence(filename, **kwargs)
     if method == "entity_sentence_only":
         return get_tokens_and_ner_tags_entity_sentence_only(filename, **kwargs)
     if method == "sample_contains_entity":
         return get_tokens_and_ner_tags_sample_contains_entity(filename, **kwargs)
+    if method == "by_seq_len":
+        return get_tokens_and_ner_tags_by_seq_len(filename, **kwargs)
+
+def get_tokens_and_ner_tags_by_num_sentence(filename, num_sentence):
+    with open(filename, 'r', encoding="utf-8") as f:
+        lines = f.readlines()
+        tokens, entities = [], []
+        current_tokens, current_entities = [], []
+        sentence_count = 0
+        for line in lines:
+            data = line.split(" ")
+            if len(data) < 2:
+                if not current_tokens:
+                    continue
+                sentence_count += 1
+                # if enough sentences have been accumulated for a data entry
+                if sentence_count == num_sentence:
+                    tokens.append(current_tokens)
+                    entities.append(current_entities)
+                    current_tokens, current_entities = [], []
+                    sentence_count = 0
+            elif len(data) == 2:
+                current_tokens.append(data[0])
+                label = data[1].strip()
+                current_entities.append(label)
+        # if any token remains
+        if current_tokens:
+            tokens.append(current_tokens)
+            entities.append(current_entities)
+    df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+    return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
 
 def get_tokens_and_ner_tags_entity_sentence_only(filename, num_sentence):
     with open(filename, 'r', encoding="utf-8") as f:

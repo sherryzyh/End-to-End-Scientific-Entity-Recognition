@@ -63,17 +63,21 @@ if __name__ == '__main__':
     validation_data_directory = data_args['validation_data']
     transformer = general_args['transformer']
 
+    # get data loading method and check for the corresponding required argument from config
     method = data_args['data_loading_method']
     get_data_arg = None
     assert_message = f"for method = {method}, {get_data_arg} must be provided as a parameter"
-    if method == "by_seq_len":
-        get_data_arg = "seq_len"
+    if method == "by_num_sentence":
+        get_data_arg = "num_sentence"
         assert get_data_arg in data_args, assert_message
     elif method == "entity_sentence_only":
         get_data_arg = "num_sentence"
         assert get_data_arg in data_args, assert_message
     elif method == "sample_contains_entity":
         get_data_arg = "num_sentence"
+        assert get_data_arg in data_args, assert_message
+    elif method == "by_seq_len":
+        get_data_arg = "seq_len"
         assert get_data_arg in data_args, assert_message
     
     set_seed(train_args['seed'])
