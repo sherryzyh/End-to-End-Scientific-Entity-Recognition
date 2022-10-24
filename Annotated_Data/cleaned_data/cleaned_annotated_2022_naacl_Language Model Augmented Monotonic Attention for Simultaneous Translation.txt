@@ -2271,7 +2271,7 @@ Eq O
 Let O
 us O
 define O
-B-MethodName O
+LM B-MethodName
 prediction O
 weight O
 as O
@@ -2621,13 +2621,13 @@ XLM B-MethodName
 , O
 30.15% B-MetricValue
 vs. O
-21.5 B-MetricValue
+21.5% B-MetricValue
 for O
 German O
 & O
 31.65% B-MetricValue
 vs. O
-18.45% B-MetricValue 
+18.45% B-MetricValue
 for O
 French O
 . O
@@ -4716,8 +4716,7 @@ loss O
 setting O
 λlatency B-HyperparameterName
 = O
-0 O
-B-HyperparameterValue O
+0 B-HyperparameterValue
 ) O
 after O
 initializing O
