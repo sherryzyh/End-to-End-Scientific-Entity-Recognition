@@ -1,0 +1,43 @@
+There are 13 papers in total.
+----------------------------------------
+There are 1116 sentences in total.
+
+Avg length of sentence 26.100358422939067.
+
+Avg length of entity sentence 27.311438278595695.
+
+Entity ANY                      #Sent    883	proportion 0.791219
+Entity I-MethodName             #Sent    162	proportion 0.145161
+Entity B-MethodName             #Sent    419	proportion 0.375448
+Entity B-DatasetName            #Sent    103	proportion 0.092294
+Entity I-DatasetName            #Sent     48	proportion 0.043011
+Entity NONE                     #Sent    286	proportion 0.256272
+Entity I-TaskName               #Sent    155	proportion 0.138889
+Entity B-TaskName               #Sent    249	proportion 0.223118
+Entity B-HyperparameterName     #Sent     89	proportion 0.079749
+Entity B-HyperparameterValue    #Sent     88	proportion 0.078853
+Entity I-HyperparameterName     #Sent     58	proportion 0.051971
+Entity I-MetricName             #Sent     30	proportion 0.026882
+Entity B-MetricName             #Sent    116	proportion 0.103943
+Entity B-MetricValue            #Sent     46	proportion 0.041219
+Entity I-MetricValue            #Sent      9	proportion 0.008065
+Entity I-HyperparameterValue    #Sent      8	proportion 0.007168
+----------------------------------------
+There are 2866 non-O entities in total.
+In the entity sentences, there are 24116 tokens in total.
+
+Entity I-MethodName             #Occur   459	proportion  0.019033
+Entity B-MethodName             #Occur   624	proportion  0.025875
+Entity B-DatasetName            #Occur   145	proportion  0.006013
+Entity I-DatasetName            #Occur   126	proportion  0.005225
+Entity I-TaskName               #Occur   382	proportion  0.015840
+Entity B-TaskName               #Occur   339	proportion  0.014057
+Entity B-HyperparameterName     #Occur   148	proportion  0.006137
+Entity B-HyperparameterValue    #Occur   169	proportion  0.007008
+Entity I-HyperparameterName     #Occur   148	proportion  0.006137
+Entity I-MetricName             #Occur    64	proportion  0.002654
+Entity B-MetricName             #Occur   156	proportion  0.006469
+Entity B-MetricValue            #Occur    76	proportion  0.003151
+Entity I-MetricValue            #Occur    14	proportion  0.000581
+Entity I-HyperparameterValue    #Occur    16	proportion  0.000663
+Non-Entity O                    #Occur 21250	proportion 0.881158
