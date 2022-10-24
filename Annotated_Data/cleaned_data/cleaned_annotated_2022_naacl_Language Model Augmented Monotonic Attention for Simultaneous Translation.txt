@@ -445,8 +445,8 @@ future O
 informa- O
 tion O
 using O
-language O B-MethodName
-models O I-MethodName
+language B-MethodName
+models I-MethodName
 ( O
 LM B-MethodName
 ) O
@@ -1702,7 +1702,7 @@ use O
 Average B-MetricName
 Lagging I-MetricName
 ( O
-AL B-MetricNam B-MetricName
+AL B-MetricName
 ) O
 as O
 our O
@@ -2271,7 +2271,7 @@ Eq O
 Let O
 us O
 define O
-B-MethodName
+B-MethodName O
 prediction O
 weight O
 as O
@@ -2606,7 +2606,7 @@ to O
 SLM B-MethodName
 ’s O
 higher O
-accuracy  B-MetricName
+accuracy B-MetricName
 on O
 the O
 next O
@@ -2621,7 +2621,7 @@ XLM B-MethodName
 , O
 30.15% B-MetricValue
 vs. O
-21.5 % B-MetricValue
+21.5 B-MetricValue
 for O
 German O
 & O
@@ -3984,7 +3984,7 @@ lan- O
 guages O
 Common B-DatasetName
 Crawl I-DatasetName
-corpora
+corpora O
 total O
 size O
 of O
@@ -4717,7 +4717,7 @@ setting O
 λlatency B-HyperparameterName
 = O
 0 O
-B-HyperparameterValue
+B-HyperparameterValue O
 ) O
 after O
 initializing O
