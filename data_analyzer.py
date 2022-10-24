@@ -11,16 +11,10 @@ class AnnotationAnalyzer:
         self.annotation_root = annotation_root
         self.total_paper_n = 0
         self.total_sent_n = 0
+        self.total_sent_len = 0
         self.avg_sent_len = 0
         self.entity_sent_stat = defaultdict(lambda: 0)
-        # self.entity_sent_stat = {"ANY": 0,
-        #                          "MethodName": 0,
-        #                          "HyperparameterName": 0,
-        #                          "HyperparameterValue": 0,
-        #                          "MetricName": 0,
-        #                          "MetricValue": 0,
-        #                          "TaskName": 0,
-        #                          "DatasetName": 0}
+        self.total_ensent_len = 0
         self.avg_ensent_len = 0
         self.entity_stat = defaultdict(lambda: 0)
         self.stats_file_path = stats_file_path
@@ -72,8 +66,11 @@ class AnnotationAnalyzer:
 
         self.total_paper_n = total_paper_n
         self.total_sent_n = total_sent_n
+        self.total_sent_len = total_sent_len
         if total_sent_n > 0:
             self.avg_sent_len = total_sent_len / total_sent_n
+
+        self.total_ensent_len = total_ensent_len
         if self.entity_sent_stat["ANY"] > 0:
             self.avg_ensent_len = total_ensent_len / self.entity_sent_stat["ANY"]
 
@@ -90,11 +87,15 @@ class AnnotationAnalyzer:
                 f.write(f"Entity {e:25}#Sent {self.entity_sent_stat[e]:6}\tproportion {self.entity_sent_stat[e] / self.total_sent_n:.6f}\n")
 
             f.write("-" * 40 + "\n")
-            total_entities_occurrence = sum(self.entity_stat.values()) - self.entity_sent_stat['O']
-            f.write(f"There are {total_entities_occurrence} non-O entities in total.\n\n")
+            total_entities_occurrence = sum(self.entity_stat.values()) - self.entity_stat['O']
+            f.write(f"There are {total_entities_occurrence} non-O entities in total.\n")
 
+            f.write(f"In the entity sentences, there are {self.total_ensent_len} tokens in total.\n\n")
             for e in self.entity_stat.keys():
-                f.write(f"Entity {e:25}#Occur {self.entity_stat[e]:5}\tproportion {self.entity_stat[e] / total_entities_occurrence: .6f}\n")
+                if e == "O":
+                    continue
+                f.write(f"Entity {e:25}#Occur {self.entity_stat[e]:5}\tproportion {self.entity_stat[e] / self.total_ensent_len: .6f}\n")
+            f.write("Non-Entity O" + " " * 20 + f"#Occur {self.total_ensent_len - total_entities_occurrence:5}\tproportion {(self.total_ensent_len - total_entities_occurrence)/self.total_ensent_len:.6f}")
 
         print(f"Statistics result is saved to {self.stats_file_path}.")
 
@@ -102,14 +103,21 @@ class AnnotationAnalyzer:
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--test', '-t', action='store_true', help="test")
+    parser.add_argument('--clean', '-c', action='store_true', help="analyze cleaned dataset")
+    parser.add_argument('--aug', '-a', action='store_true', help="analyze aug dataset")
     args = parser.parse_args()
 
     project_root = os.getcwd()
     if args.test:
         annotation_root = os.path.join(project_root, "Annotated_Data", "test_annotation")
-    else:
+        stats_file_path = os.path.join(project_root, "Annotated_Data", "test_stats.txt")
+    elif args.clean:
         annotation_root = os.path.join(project_root, "Annotated_Data", "cleaned_data")
-    stats_file_path = os.path.join(project_root, "Annotated_Data", "stats.txt")
+        stats_file_path = os.path.join(project_root, "Annotated_Data", "clean_stats.txt")
+    elif args.aug:
+        annotation_root = os.path.join(project_root, "Annotated_Data", "clean_data_aug")
+        stats_file_path = os.path.join(project_root, "Annotated_Data", "aug_stats.txt")
+
     analyzer = AnnotationAnalyzer(annotation_root, stats_file_path)
     analyzer.analyze()
     analyzer.display()
