@@ -177,15 +177,17 @@ class EntitySentence:
         self.entity_set = set()
         self.entity_stat = defaultdict(lambda: 0)
         self.isEnd = False
+        self.sentenceLen = 0
 
     def __len__(self):
-        return len(self.sentence.strip().split(" "))
+        return self.sentenceLen
 
     def clear(self):
         self.sentence = ""
         self.entity_set = set()
         self.entity_stat = defaultdict(lambda: 0)
         self.isEnd = False
+        self.sentenceLen = 0
 
     def readLine(self, line):
         if len(line) == 0:
@@ -193,21 +195,25 @@ class EntitySentence:
         else:
             self.isEnd = False
             line = line.strip().split(" ")
+            self.sentenceLen += 1
+            # print(line)
             if len(line) < 2:
                 token = " "
                 label = line[0]
             else:
                 token, label = line
             self.sentence += " " + token
-            if label[0] == "B":
-                self.entity_set.add(label[2:])
-                self.entity_stat[label[2:]] += 1
+            self.entity_set.add(label)
+            self.entity_stat[label] += 1
+            # if label[0] == "B":
+            #     self.entity_set.add(label[2:])
+            #     self.entity_stat[label[2:]] += 1
 
     def containEntity(self):
-        if len(self.entity_set) > 0:
-            return True
-        else:
-            return False
+        for e in self.entity_stat:
+            if e != "O":
+                return True
+        return False
 
     def entityCount(self, entity):
         return self.entity_stat[entity]

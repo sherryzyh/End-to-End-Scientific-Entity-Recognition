@@ -12,14 +12,15 @@ class AnnotationAnalyzer:
         self.total_paper_n = 0
         self.total_sent_n = 0
         self.avg_sent_len = 0
-        self.entity_sent_stat = {"ANY": 0,
-                                 "MethodName": 0,
-                                 "HyperparameterName": 0,
-                                 "HyperparameterValue": 0,
-                                 "MetricName": 0,
-                                 "MetricValue": 0,
-                                 "TaskName": 0,
-                                 "DatasetName": 0}
+        self.entity_sent_stat = defaultdict(lambda: 0)
+        # self.entity_sent_stat = {"ANY": 0,
+        #                          "MethodName": 0,
+        #                          "HyperparameterName": 0,
+        #                          "HyperparameterValue": 0,
+        #                          "MetricName": 0,
+        #                          "MetricValue": 0,
+        #                          "TaskName": 0,
+        #                          "DatasetName": 0}
         self.avg_ensent_len = 0
         self.entity_stat = defaultdict(lambda: 0)
         self.stats_file_path = stats_file_path
@@ -56,8 +57,12 @@ class AnnotationAnalyzer:
                             self.entity_stat[entity] += entitysentence.entityCount(entity)
                             if entitysentence.entityCount(entity) > 0:
                                 self.entity_sent_stat[entity] += 1
-
                         total_ensent_len += len(entitysentence)
+                    else:
+                        self.entity_sent_stat['NONE'] += 1
+
+                    self.entity_stat['O'] += entitysentence.entityCount('O')
+
                     entitysentence.clear()
 
 
@@ -65,7 +70,8 @@ class AnnotationAnalyzer:
 
         self.total_paper_n = total_paper_n
         self.total_sent_n = total_sent_n
-        self.avg_sent_len = total_sent_len / total_sent_n
+        if total_sent_n > 0:
+            self.avg_sent_len = total_sent_len / total_sent_n
         if self.entity_sent_stat["ANY"] > 0:
             self.avg_ensent_len = total_ensent_len / self.entity_sent_stat["ANY"]
 
@@ -77,12 +83,12 @@ class AnnotationAnalyzer:
             f.write(f"Avg length of sentence {self.avg_sent_len}.\n\n")
             f.write(f"Avg length of entity sentence {self.avg_ensent_len}.\n\n")
             for e, c in self.entity_sent_stat.items():
-                f.write(f"Entity {e:20}#Sent {c:6}\tproportion {c / self.total_sent_n:.4f}\n")
+                f.write(f"Entity {e:25}#Sent {c:6}\tproportion {c / self.total_sent_n:.4f}\n")
             f.write("-" * 40 + "\n")
             total_entities_occurrence = sum(self.entity_stat.values())
             f.write(f"There are {total_entities_occurrence} entities in total.\n\n")
             for e, c in self.entity_stat.items():
-                f.write(f"Entity {e:20}#Occur {c:5}\tproportion {c / total_entities_occurrence: .4f}\n")
+                f.write(f"Entity {e:25}#Occur {c:5}\tproportion {c / total_entities_occurrence: .4f}\n")
 
         print(f"Statistics result is saved to {self.stats_file_path}.")
 
