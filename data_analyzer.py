@@ -54,6 +54,8 @@ class AnnotationAnalyzer:
                         # update entity statistics
                         self.entity_sent_stat["ANY"] += 1
                         for entity in entitysentence.entity_set:
+                            if entity == "O":
+                                continue
                             self.entity_stat[entity] += entitysentence.entityCount(entity)
                             if entitysentence.entityCount(entity) > 0:
                                 self.entity_sent_stat[entity] += 1
@@ -78,17 +80,21 @@ class AnnotationAnalyzer:
     def display(self):
         with open(self.stats_file_path, "w", encoding="utf-8") as f:
             f.write(f"There are {self.total_paper_n} papers in total.\n")
+
             f.write("-" * 40 + "\n")
             f.write(f"There are {self.total_sent_n} sentences in total.\n\n")
             f.write(f"Avg length of sentence {self.avg_sent_len}.\n\n")
             f.write(f"Avg length of entity sentence {self.avg_ensent_len}.\n\n")
-            for e, c in self.entity_sent_stat.items():
-                f.write(f"Entity {e:25}#Sent {c:6}\tproportion {c / self.total_sent_n:.4f}\n")
+
+            for e in self.entity_sent_stat.keys():
+                f.write(f"Entity {e:25}#Sent {self.entity_sent_stat[e]:6}\tproportion {self.entity_sent_stat[e] / self.total_sent_n:.6f}\n")
+
             f.write("-" * 40 + "\n")
-            total_entities_occurrence = sum(self.entity_stat.values())
-            f.write(f"There are {total_entities_occurrence} entities in total.\n\n")
-            for e, c in self.entity_stat.items():
-                f.write(f"Entity {e:25}#Occur {c:5}\tproportion {c / total_entities_occurrence: .4f}\n")
+            total_entities_occurrence = sum(self.entity_stat.values()) - self.entity_sent_stat['O']
+            f.write(f"There are {total_entities_occurrence} non-O entities in total.\n\n")
+
+            for e in self.entity_stat.keys():
+                f.write(f"Entity {e:25}#Occur {self.entity_stat[e]:5}\tproportion {self.entity_stat[e] / total_entities_occurrence: .6f}\n")
 
         print(f"Statistics result is saved to {self.stats_file_path}.")
 

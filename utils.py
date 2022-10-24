@@ -212,7 +212,9 @@ class EntitySentence:
     def containEntity(self):
         for e in self.entity_stat:
             if e != "O":
+                # print(f"contain entity {e}")
                 return True
+        # print("contain no entity")
         return False
 
     def entityCount(self, entity):
