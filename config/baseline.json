@@ -8,13 +8,12 @@
         {
             "train_data": "train_data",
             "validation_data": "validation_data",
-            "data_loading_method": "by_num_sentence",
-            "num_sentence": 10
+            "data_loading_method": "sentence_contains_entity"
         },
     "train_args":
         {
             "seed": 20,
-            "num_epochs": 10,
+            "num_epochs": 100,
             "batch_size": 64,
             "learning_rate": 2e-5,
             "weight_decay": 0.01

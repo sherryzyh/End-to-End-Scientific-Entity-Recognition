@@ -43,12 +43,14 @@ def compute_metrics(p):
     return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
 def get_tokens_and_ner_tags(filename, method, **kwargs):
+    if method == "sentence_contains_entity":
+        return get_tokens_and_ner_tags_sentence_contains_entity(filename)
     if method == "by_num_sentence":
         return get_tokens_and_ner_tags_by_num_sentence(filename, **kwargs)
-    if method == "entity_sentence_only":
-        return get_tokens_and_ner_tags_entity_sentence_only(filename, **kwargs)
-    if method == "sample_contains_entity":
-        return get_tokens_and_ner_tags_sample_contains_entity(filename, **kwargs)
+    if method == "paragraph_entity_sentence_only":
+        return get_tokens_and_ner_tags_paragraph_entity_sentence_only(filename, **kwargs)
+    if method == "paragraph_contains_entity":
+        return get_tokens_and_ner_tags_paragraph_contains_entity(filename, **kwargs)
     if method == "by_seq_len":
         return get_tokens_and_ner_tags_by_seq_len(filename, **kwargs)
     if method == "text_by_num_sentence":
@@ -72,6 +74,35 @@ def get_text_by_num_sentence(filename, num_sentence):
                 count = 0
     df = pd.DataFrame({'text': text})
     return pd.DataFrame({'text': text})
+
+def get_tokens_and_ner_tags_sentence_contains_entity(filename):
+    with open(filename, 'r', encoding="utf-8") as f:
+        lines = f.readlines()
+        tokens, entities = [], []
+        sentence_tokens, sentence_entities = [], []
+        entity_flag = False
+        for line in lines:
+            data = line.split(" ")
+            if len(data) < 2:
+                if not sentence_tokens:
+                    continue
+                if entity_flag:
+                    tokens.append(sentence_tokens)
+                    entities.append(sentence_entities)
+                    entity_flag = False
+                sentence_tokens, sentence_entities = [], []
+            elif len(data) == 2:
+                sentence_tokens.append(data[0])
+                label = data[1].strip()
+                sentence_entities.append(label)
+                if label != "O":
+                    entity_flag = True
+        # if any token remains and a (non-O) entity is contained
+        if sentence_tokens and entity_flag:
+            tokens.append(sentence_tokens)
+            entities.append(sentence_entities)
+    df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+    return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
 
 def get_tokens_and_ner_tags_by_num_sentence(filename, num_sentence):
     with open(filename, 'r', encoding="utf-8") as f:
@@ -102,7 +133,7 @@ def get_tokens_and_ner_tags_by_num_sentence(filename, num_sentence):
     df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
 
-def get_tokens_and_ner_tags_entity_sentence_only(filename, num_sentence):
+def get_tokens_and_ner_tags_paragraph_entity_sentence_only(filename, num_sentence):
     with open(filename, 'r', encoding="utf-8") as f:
         lines = f.readlines()
         tokens, entities = [], []
@@ -141,7 +172,7 @@ def get_tokens_and_ner_tags_entity_sentence_only(filename, num_sentence):
     df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
 
-def get_tokens_and_ner_tags_sample_contains_entity(filename, num_sentence):
+def get_tokens_and_ner_tags_paragraph_contains_entity(filename, num_sentence):
     with open(filename, 'r', encoding="utf-8") as f:
         lines = f.readlines()
         tokens, entities = [], []
