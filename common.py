@@ -42,6 +42,9 @@ def compute_metrics(p):
     results = metric.compute(predictions=true_predictions, references=true_labels)
     return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
+"""
+    Data Loading Methods
+"""
 def get_tokens_and_ner_tags(filename, method, **kwargs):
     if method == "sentence_contains_entity":
         return get_tokens_and_ner_tags_sentence_contains_entity(filename)
@@ -56,9 +59,6 @@ def get_tokens_and_ner_tags(filename, method, **kwargs):
     if method == "text_by_num_sentence":
         return get_text_by_num_sentence(filename, **kwargs)
 
-"""
-    Data Loading Methods
-"""
 def get_text_by_num_sentence(filename, num_sentence):
     count = 0
     currtext = ""
