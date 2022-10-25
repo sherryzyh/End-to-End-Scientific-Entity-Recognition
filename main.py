@@ -46,9 +46,13 @@ def tokenize_and_align_labels(examples):
 if __name__ == '__main__':
     # parse command line arguments and load config
     parser = ArgumentParser()
-    parser.add_argument('--config', type=str, default='./config/baseline.json',
+    parser.add_argument('--config', '-c',
+                        type=str,
+                        default='./config/baseline.json',
                         help='Configuration file to use')
-    parser.add_argument('--resume_from_checkpoint', type=str, default=None,
+    parser.add_argument('--resume_from_checkpoint', '-r',
+                        type=str,
+                        default=None,
                         help='Resume from a saved checkpoint')
     args = parser.parse_args()
     config_file = args.config
@@ -90,7 +94,6 @@ if __name__ == '__main__':
 
     tz_EST = pytz.timezone('America/New_York')
     datetime_EST = datetime.now(tz_EST)
-    experiment_name = "_".join([general_args["system"], datetime_EST.strftime("%m-%d_%H-%M-%S")])
 
     # load and preprocess data
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -124,7 +127,8 @@ if __name__ == '__main__':
         device = "cpu"
     print(f"deivce: {device}")
     model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id).to(device)
-    output_dir = "./results/" + experiment_name
+    experiment_name = "_".join([general_args["system"], datetime_EST.strftime("%m-%d_%H-%M-%S")])
+    output_dir = "/data/results/" + experiment_name
     training_args = TrainingArguments(
         output_dir=output_dir,
         evaluation_strategy="epoch",

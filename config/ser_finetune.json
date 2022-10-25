@@ -1,8 +1,8 @@
 {
     "general_args":
         {
-            "transformer": "dslim/bert-base-NER",
-            "system": "baseline"
+            "transformer": "/data/results/scientific_mlm_test/best_saved",
+            "system": "ser_finetune"
         },
     "data_args":
         {
@@ -13,7 +13,7 @@
     "train_args":
         {
             "seed": 20,
-            "num_epochs": 100,
+            "num_epochs": 1,
             "batch_size": 8,
             "learning_rate": 2e-5,
             "weight_decay": 0.01
