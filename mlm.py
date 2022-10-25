@@ -2,15 +2,17 @@ from transformers import (
     AutoTokenizer,
     DataCollatorForTokenClassification,
     DataCollatorForLanguageModeling,
+    BertForMaskedLM,
     AutoModelForMaskedLM,
     AutoModelForTokenClassification,
     TrainingArguments,
     Trainer
 )
 from datasets import Dataset
+import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import BatchSampler, RandomSampler
-from common import get_dataset, compute_metrics, id2label, label2id
+from common import get_dataset, compute_metrics, id2label, label2id, get_timestamp
 from argparse import ArgumentParser
 import json
 import os
@@ -21,7 +23,15 @@ def preprocess_function(examples):
     return tokenizer(examples['text'], truncation=True)
 
 if __name__ == '__main__':
-    config_file = "config/scientifc_mlm.json"
+    parser = ArgumentParser()
+    parser.add_argument('--config_file', '-c',
+                        type=str,
+                        default='./config/bert_scientific_mlm.json',
+                        help='Configuration file to use')
+    args = parser.parse_args()
+    config_file = args.config_file
+
+    config_file = args.config_file
     with open(config_file, 'r') as f:
         config = json.load(f)
 
@@ -32,8 +42,23 @@ if __name__ == '__main__':
     data_args = config['data_args']
     train_args = config['train_args']
     mlm_args = config['mlm_args']
+    os.environ['TRANSFORMERS_CACHE'] = general_args["cache"]
 
-    model = AutoModelForMaskedLM.from_pretrained(general_args['transformer']).cuda()
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    else:
+        device = "cpu"
+    
+    print(f"deivce: {device}")
+
+    model = BertForMaskedLM.from_pretrained(general_args["transformer"], cache_dir=general_args["cache"]).to(device)
+    print("*" * 40)
+    print(model)
+
+    print("*" * 40)
+    print(model.config)
+
+    experiment_time = get_timestamp()
 
     """
         Prepare Data
@@ -54,11 +79,16 @@ if __name__ == '__main__':
     """
         Tokenize Dataset
     """
-    tokenizer = AutoTokenizer.from_pretrained(general_args['transformer'])
+    tokenizer = AutoTokenizer.from_pretrained(general_args["transformer"], cache_dir=general_args["cache"])
+    print("*" * 40)
+    print(tokenizer)
+
     tokenizer.eos_token = "[EOS]"
-    print("eos_token:", tokenizer.eos_token)
-    print("pad_token:", tokenizer.pad_token)
-    print("mask_token:", tokenizer.mask_token)
+    # print("*" * 40)
+    # print("****** Tokenizer Special Tokens ******")
+    # print("eos_token:", tokenizer.eos_token)
+    # print("pad_token:", tokenizer.pad_token)
+    # print("mask_token:", tokenizer.mask_token)
 
     # Use Datasets map function to tokenize and align the labels over the entire dataset.
     tokenized_train_dataset = train_dataset.map(
@@ -77,7 +107,6 @@ if __name__ == '__main__':
     # print("****** tokenized dataset sample ******")
     # print(tokenized_train_dataset[0])
 
-
     # Use DataCollatorForTokenClassification to create a batch of examples
     # It will also dynamically pad your text and labels to the length of the longest element in its batch
     # so they are a uniform length.
@@ -88,7 +117,11 @@ if __name__ == '__main__':
     """
         Training
     """
-    training_args = TrainingArguments(**train_args)
+    output_dir = os.path.join(general_args["result_root"], "_".join([general_args["system"], experiment_time.strftime("%m-%d_%H-%M-%S")]))
+    # shutil.copy2(config_file, output_dir)
+
+    training_args = TrainingArguments(output_dir=output_dir,
+                                        **train_args)
 
     trainer = Trainer(
         model=model,
@@ -98,9 +131,9 @@ if __name__ == '__main__':
         data_collator=data_collator,
     )
 
-    # trainer.train()
-    # trainer.evaluate()
+    trainer.train()
+    trainer.evaluate()
 
-    shutil.copy2(config_file, train_args["output_dir"])
-    # model.save_pretrained(os.path.join(train_args["output_dir"], "best_saved"))
-    # tokenizer.save_pretrained(os.path.join(train_args["output_dir"], "best_saved"))
+    pt_save_directory = os.path.join(output_dir, "save_pretrained")
+    model.save_pretrained(pt_save_directory)
+    tokenizer.save_pretrained(pt_save_directory)

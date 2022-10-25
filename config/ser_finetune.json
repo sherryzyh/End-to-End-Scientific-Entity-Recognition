@@ -1,8 +1,10 @@
 {
     "general_args":
         {
-            "transformer": "/data/results/scientific_mlm_test/best_saved",
-            "system": "ser_finetune"
+            "transformer": "results/scientific_mlm_test/best_saved",
+            "system": "ser_finetune",
+            "result_root": "./results",
+            "cache": ".cache/"
         },
     "data_args":
         {

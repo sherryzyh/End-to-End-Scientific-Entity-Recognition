@@ -11,6 +11,8 @@ import torch
 from torch import nn
 from transformers import Trainer
 from zmq import device
+from datetime import datetime
+import pytz
 
 label_list = [
     'O', 
@@ -24,7 +26,12 @@ label_list = [
     ]
 id2label = {i: label for i, label in enumerate(label_list)}
 label2id = {label: i for i, label in enumerate(label_list)}
-  
+
+def get_timestamp():
+    tz_EST = pytz.timezone('America/New_York')
+    datetime_EST = datetime.now(tz_EST)
+    return datetime_EST
+
 def get_dataset(directory, method, **kwargs):
     df = pd.concat([get_tokens_and_ner_tags(os.path.join(directory, filename), method, **kwargs) \
         for filename in os.listdir(directory)]).reset_index().drop('index', axis=1)
@@ -241,6 +248,7 @@ class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         labels = inputs.get("labels")
         # forward pass
+        print(inputs)
         outputs = model(**inputs)
         logits = outputs.get("logits")
         # compute weighted cross entropy loss

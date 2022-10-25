@@ -2,6 +2,7 @@
 This file runs each experiment. 
 Configs can be specified using command line argument "--config".
 '''
+from cmath import exp
 import torch
 from colorama import deinit
 from transformers import (
@@ -16,11 +17,9 @@ from argparse import ArgumentParser
 import json
 import os
 import shutil
-from datetime import datetime
-import pytz
 import statistics
 
-from common import get_dataset, compute_metrics, id2label, label2id, CustomTrainer
+from common import get_dataset, compute_metrics, id2label, label2id, CustomTrainer, get_timestamp
 
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
@@ -64,6 +63,8 @@ if __name__ == '__main__':
     data_args = config['data_args']
     train_args = config['train_args']
     
+    os.environ['TRANSFORMERS_CACHE'] = general_args["cache"]
+
     train_data_directory = data_args['train_data']
     validation_data_directory = data_args['validation_data']
     transformer = general_args['transformer']
@@ -92,13 +93,12 @@ if __name__ == '__main__':
     
     set_seed(train_args['seed'])
 
-    tz_EST = pytz.timezone('America/New_York')
-    datetime_EST = datetime.now(tz_EST)
-
     # load and preprocess data
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     #seq_len_stats = []
-    tokenizer = AutoTokenizer.from_pretrained(transformer)
+    tokenizer = AutoTokenizer.from_pretrained(transformer, cache_dir=general_args["cache"])
+    print(tokenizer.vocab_files_names)
+
     train_dataset = get_dataset(train_data_directory, method, **kwargs)
     validation_dataset = get_dataset(validation_data_directory, method, **kwargs)
     train_dataset = train_dataset.map(tokenize_and_align_labels, batched=True)
@@ -126,9 +126,13 @@ if __name__ == '__main__':
     else:
         device = "cpu"
     print(f"deivce: {device}")
-    model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id).to(device)
-    experiment_name = "_".join([general_args["system"], datetime_EST.strftime("%m-%d_%H-%M-%S")])
-    output_dir = "/data/results/" + experiment_name
+    # model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id).to(device)
+    model = AutoModelForTokenClassification.from_pretrained(transformer, cache_dir=general_args["cache"]).to(device)
+    print(model)
+
+    experiment_time = get_timestamp()
+    experiment_name = "_".join([general_args["system"], experiment_time.strftime("%m-%d_%H-%M-%S")])
+    output_dir = "./results/" + experiment_name
     training_args = TrainingArguments(
         output_dir=output_dir,
         evaluation_strategy="epoch",

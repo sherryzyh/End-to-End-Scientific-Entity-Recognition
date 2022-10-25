@@ -2,7 +2,8 @@
     "general_args":
         {
             "transformer": "dslim/bert-base-NER",
-            "system": "baseline"
+            "system": "baseline",
+            "cache": ".cache/"
         },
     "data_args":
         {
