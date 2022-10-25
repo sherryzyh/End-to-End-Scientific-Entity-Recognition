@@ -1,0 +1,33 @@
+{
+    "general_args":
+        {
+            "transformer": "dslim/bert-base-NER",
+            "system": "scientific_mlm"
+        },
+    "data_args":
+        {
+            "train_data": "Raw_Unsupervised_Data/parsed_paper",
+            "val_data": "Annotated_Data/cleaned_data",
+            "data_loading_method": "text_by_num_sentence",
+            "num_sentence": 10
+        },
+    "mlm_args":
+        {
+            "mlm": true,
+            "mlm_probability": 0.15,
+            "return_tensors": "pt"
+        },
+    "train_args":
+        {
+            "num_train_epochs": 10,
+            "do_train": true,
+            "do_eval": true,
+            "remove_unused_columns": false,
+            "evaluation_strategy": "epoch",
+            "per_device_train_batch_size": 32,
+            "learning_rate": 2e-5,
+            "weight_decay": 0.01,
+            "output_dir": "./results/scientific_mlm",
+            "save_strategy": "epoch"
+        }
+}

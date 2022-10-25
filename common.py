@@ -51,6 +51,27 @@ def get_tokens_and_ner_tags(filename, method, **kwargs):
         return get_tokens_and_ner_tags_sample_contains_entity(filename, **kwargs)
     if method == "by_seq_len":
         return get_tokens_and_ner_tags_by_seq_len(filename, **kwargs)
+    if method == "text_by_num_sentence":
+        return get_text_by_num_sentence(filename, **kwargs)
+
+"""
+    Data Loading Methods
+"""
+def get_text_by_num_sentence(filename, num_sentence):
+    count = 0
+    currtext = ""
+    text = []
+    with open(filename, 'r', encoding="utf-8") as f:
+        lines = f.readlines()
+        for line in lines:
+            currtext = currtext + " " + line
+            count += 1
+            if count == num_sentence:
+                text.append(currtext)
+                currtext = ""
+                count = 0
+    df = pd.DataFrame({'text': text})
+    return pd.DataFrame({'text': text})
 
 def get_tokens_and_ner_tags_by_num_sentence(filename, num_sentence):
     with open(filename, 'r', encoding="utf-8") as f:
@@ -180,6 +201,10 @@ def get_tokens_and_ner_tags_by_seq_len(filename, seq_len):
     df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
 
+
+"""
+    Trainer
+"""
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         labels = inputs.get("labels")
