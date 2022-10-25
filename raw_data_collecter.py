@@ -132,11 +132,11 @@ if __name__=="__main__":
     project_root = os.getcwd()
     if args.unsupervised:
         print("Unsupervised Dataset Collection")
-        DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Unsupervised_Data"),
+        DataCollector = RawDataCollector(raw_data_root="/data/Unsupervised_Data",
                                          collection_mode="unsupervised")
         DataCollector.prep_raw_data(tokenize=True,
                                     parse=True,
-                                    collect=False)
+                                    collect=True)
     else:
         DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Data"))
         DataCollector.prep_raw_data(tokenize=args.tokenize,
