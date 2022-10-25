@@ -49,15 +49,20 @@ class RawDataCollector:
                 self.scraper.getEachConferenceForYear(year)
 
     def parse_papers(self, source, destination):
+        print("***** parse *****")
         for folder in os.listdir(source):
             if not os.path.isdir(os.path.join(source, folder)):
                 continue
 
             for pdf in os.listdir(os.path.join(source, folder)):
+                if not pdf.endswith(".pdf"):
+                    continue
                 reader = PdfReader(os.path.join(source, folder, pdf))
                 article_info = pdf.split(".")
-                year, conference, article, _  = article_info
-                txt = year + "_" + conference + "_" + article + ".txt"
+                year = article_info[0]
+                conference = article_info[1]
+                publish_info = f"{year}_{conference}_"
+                txt = publish_info + pdf[len(publish_info):-4] + ".txt"
                 save_as = os.path.join(destination, txt)
                 with open(save_as, "w", encoding="utf-8") as txt_file:
                     for page in reader.pages:
@@ -93,6 +98,7 @@ class RawDataCollector:
         tokenf.close()
 
     def tokenize_papers(self):
+        print("***** tokenize *****")
         paper_list = sorted(os.listdir(self.parsed_root))
         for paper in paper_list:
             read_path = os.path.join(self.parsed_root, paper)
@@ -126,11 +132,11 @@ if __name__=="__main__":
     project_root = os.getcwd()
     if args.unsupervised:
         print("Unsupervised Dataset Collection")
-        DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Unsupervised_Data"),
+        DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Unsupervised_Data"),
                                          collection_mode="unsupervised")
         DataCollector.prep_raw_data(tokenize=True,
                                     parse=True,
-                                    collect=True)
+                                    collect=False)
     else:
         DataCollector = RawDataCollector(raw_data_root=os.path.join(project_root, "Raw_Data"))
         DataCollector.prep_raw_data(tokenize=args.tokenize,
