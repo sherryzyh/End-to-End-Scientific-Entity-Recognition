@@ -2,7 +2,8 @@
 This file runs each experiment. 
 Configs can be specified using command line argument "--config".
 '''
-
+import torch
+from colorama import deinit
 from transformers import (
     DataCollatorForTokenClassification, 
     AutoTokenizer, 
@@ -117,7 +118,12 @@ if __name__ == '__main__':
     
     # train and eval
     # reference for "ignore_mismatched_sizes": https://github.com/huggingface/transformers/issues/14218
-    model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id)
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    else:
+        device = "cpu"
+    print(f"deivce: {device}")
+    model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id).to(device)
     output_dir = "./results/" + experiment_name
     training_args = TrainingArguments(
         output_dir=output_dir,
@@ -128,7 +134,8 @@ if __name__ == '__main__':
         per_device_train_batch_size=train_args['batch_size'],
         per_device_eval_batch_size=train_args['batch_size'],
         num_train_epochs=train_args['num_epochs'],
-        weight_decay=train_args['weight_decay']
+        weight_decay=train_args['weight_decay'],
+        load_best_model_at_end=True
     )
 
     trainer = CustomTrainer(
