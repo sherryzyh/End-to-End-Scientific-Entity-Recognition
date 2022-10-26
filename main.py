@@ -67,7 +67,8 @@ if __name__ == '__main__':
 
     train_data_directory = data_args['train_data']
     validation_data_directory = data_args['validation_data']
-    transformer = general_args['transformer']
+    transformer_name = general_args['transformer']
+    tokenizer_name = general_args['tokenizer']
 
     # get data loading method and check for the corresponding required argument from config
     method = data_args['data_loading_method']
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     # load and preprocess data
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     #seq_len_stats = []
-    tokenizer = AutoTokenizer.from_pretrained(transformer, cache_dir=general_args["cache"])
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, cache_dir=general_args["cache"])
     print(tokenizer.vocab_files_names)
 
     train_dataset = get_dataset(train_data_directory, method, **kwargs)
@@ -126,8 +127,8 @@ if __name__ == '__main__':
     else:
         device = "cpu"
     print(f"deivce: {device}")
-    # model = AutoModelForTokenClassification.from_pretrained(transformer, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id).to(device)
-    model = AutoModelForTokenClassification.from_pretrained(transformer, cache_dir=general_args["cache"]).to(device)
+    model = AutoModelForTokenClassification.from_pretrained(transformer_name, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id).to(device)
+    # model = AutoModelForTokenClassification.from_pretrained(transformer, cache_dir=general_args["cache"]).to(device)
     print(model)
 
     experiment_time = get_timestamp()

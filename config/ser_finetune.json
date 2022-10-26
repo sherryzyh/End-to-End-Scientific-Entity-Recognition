@@ -1,7 +1,8 @@
 {
     "general_args":
         {
-            "transformer": "results/scientific_mlm_test/best_saved",
+            "transformer": "results/scientific_mlm_10-25/ner_scientific_mlm_unsupervised_16_epoch_10",
+            "tokenizer": "dslim/bert-base-NER",
             "system": "ser_finetune",
             "result_root": "./results",
             "cache": ".cache/"
@@ -15,7 +16,7 @@
     "train_args":
         {
             "seed": 20,
-            "num_epochs": 1,
+            "num_epochs": 20,
             "batch_size": 8,
             "learning_rate": 2e-5,
             "weight_decay": 0.01

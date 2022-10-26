@@ -2,6 +2,7 @@
     "general_args":
         {
             "transformer": "dslim/bert-base-NER",
+            "tokenizer": "dslim/bert-base-NER",
             "system": "baseline",
             "cache": ".cache/"
         },
