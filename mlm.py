@@ -12,7 +12,7 @@ from datasets import Dataset
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import BatchSampler, RandomSampler
-from common import get_dataset, compute_metrics, id2label, label2id, get_timestamp
+from common import get_dataset, get_timestamp
 from argparse import ArgumentParser
 import json
 import os
@@ -52,11 +52,11 @@ if __name__ == '__main__':
     print(f"deivce: {device}")
 
     model = BertForMaskedLM.from_pretrained(general_args["transformer"], cache_dir=general_args["cache"]).to(device)
-    print("*" * 40)
-    print(model)
+    # print("*" * 40)
+    # print(model)
 
-    print("*" * 40)
-    print(model.config)
+    # print("*" * 40)
+    # print(model.config)
 
     experiment_time = get_timestamp()
 
@@ -79,9 +79,9 @@ if __name__ == '__main__':
     """
         Tokenize Dataset
     """
-    tokenizer = AutoTokenizer.from_pretrained(general_args["transformer"], cache_dir=general_args["cache"])
-    print("*" * 40)
-    print(tokenizer)
+    tokenizer = AutoTokenizer.from_pretrained(general_args["tokenizer"], cache_dir=general_args["cache"])
+    # print("*" * 40)
+    # print(tokenizer)
 
     tokenizer.eos_token = "[EOS]"
     # print("*" * 40)
@@ -118,8 +118,7 @@ if __name__ == '__main__':
         Training
     """
     output_dir = os.path.join(general_args["result_root"], "_".join([general_args["system"], experiment_time.strftime("%m-%d_%H-%M-%S")]))
-    # shutil.copy2(config_file, output_dir)
-
+    logging_dir = os.path.join(output_dir, "log")
     training_args = TrainingArguments(output_dir=output_dir,
                                         **train_args)
 
@@ -131,9 +130,15 @@ if __name__ == '__main__':
         data_collator=data_collator,
     )
 
-    trainer.train()
-    trainer.evaluate()
+    train_result = trainer.train()
+    metrics = train_result.metrics
+
+    eval_result = trainer.evaluate()
 
     pt_save_directory = os.path.join(output_dir, "save_pretrained")
     model.save_pretrained(pt_save_directory)
-    tokenizer.save_pretrained(pt_save_directory)
+
+    trainer.log_metrics("train", metrics)
+    trainer.log_metrics("eval", eval_result)
+
+    shutil.copy2(config_file, pt_save_directory)
