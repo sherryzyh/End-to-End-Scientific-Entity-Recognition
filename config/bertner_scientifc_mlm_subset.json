@@ -3,7 +3,7 @@
         {
             "transformer": "dslim/bert-base-NER",
             "tokenizer": "dslim/bert-base-NER",
-            "system": "bertner_scientific_mlm",
+            "system": "bertner_scientific_mlm_subset",
             "result_root": "./results"
         },
     "data_args":

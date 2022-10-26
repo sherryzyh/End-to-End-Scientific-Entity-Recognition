@@ -3,7 +3,7 @@
         {
             "transformer": "bert-base-cased",
             "tokenizer": "bert-base-cased",
-            "system": "test_bert_scientific_mlm",
+            "system": "bert_scientific_mlm",
             "result_root": "./results",
             "cache": ".cache"
         },

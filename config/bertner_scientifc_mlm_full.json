@@ -1,11 +1,10 @@
 {
     "general_args":
         {
-            "transformer": "bert-base-cased",
-            "tokenizer": "bert-base-cased",
-            "system": "bert_scientific_mlm_full",
-            "result_root": "./results",
-            "cache": ".cache"
+            "transformer": "dslim/bert-base-NER",
+            "tokenizer": "dslim/bert-base-NER",
+            "system": "bertner_scientific_mlm_full",
+            "result_root": "./results"
         },
     "data_args":
         {
