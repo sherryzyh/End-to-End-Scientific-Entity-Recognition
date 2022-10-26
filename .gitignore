@@ -2,6 +2,9 @@
 grobid-0.6.2/
 Raw_Data/
 Raw_Unsupervised_Data/
+Unsupervised_Demo/
+Unsupervised_Subset/
+pretrained_model/
 parse_with_scipdf.py
 */.DS_Store
 .DS_Store
@@ -12,3 +15,4 @@ __pycache__/
 results/
 *.log
 .cache/
+exp.sh
