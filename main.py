@@ -147,7 +147,7 @@ if __name__ == '__main__':
         load_best_model_at_end=True
     )
 
-    if train_args["loss"] == "unweighted":
+    if "loss" in train_args and train_args["loss"] == "unweighted":
         trainer = Trainer(
             model=model,
             args=training_args,
@@ -168,7 +168,7 @@ if __name__ == '__main__':
             data_collator=data_collator,
             compute_metrics=compute_metrics
         )
-        
+
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
     metrics = train_result.metrics
     
