@@ -4,7 +4,8 @@
             "transformer": "dslim/bert-base-NER",
             "tokenizer": "dslim/bert-base-NER",
             "system": "bertner_scientific_mlm_full",
-            "result_root": "./results"
+            "result_root": "./results",
+            "cache": ".cache"
         },
     "data_args":
         {

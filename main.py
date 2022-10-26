@@ -147,15 +147,26 @@ if __name__ == '__main__':
         load_best_model_at_end=True
     )
 
-    trainer = CustomTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=validation_dataset,
-        tokenizer=tokenizer,
-        data_collator=data_collator,
-        compute_metrics=compute_metrics
-    )
+    if train_args["loss"] == "unweighted":
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            eval_dataset=validation_dataset,
+            tokenizer=tokenizer,
+            data_collator=data_collator,
+            compute_metrics=compute_metrics
+        )
+    else:
+        trainer = CustomTrainer(
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            eval_dataset=validation_dataset,
+            tokenizer=tokenizer,
+            data_collator=data_collator,
+            compute_metrics=compute_metrics
+        )
 
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
     metrics = train_result.metrics
