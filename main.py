@@ -147,6 +147,7 @@ if __name__ == '__main__':
         load_best_model_at_end=True
     )
 
+<<<<<<< HEAD
     if train_args["loss"] == "unweighted":
         trainer = Trainer(
             model=model,
@@ -167,6 +168,18 @@ if __name__ == '__main__':
             data_collator=data_collator,
             compute_metrics=compute_metrics
         )
+=======
+    # CustomTrainer uses weighted loss
+    trainer = CustomTrainer(  
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=validation_dataset,
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics
+    )
+>>>>>>> 92132281b40def30fa5507d3111054b0b9801d64
 
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
     metrics = train_result.metrics
