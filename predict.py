@@ -26,8 +26,7 @@ if __name__ == '__main__':
     model_path = os.path.join('/data/results', args.model)
     output_path = os.path.join('output_conll', args.output)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
-    #test_data_file = 'test_data/anlp-sciner-test.txt'
-    test_data_file = 'test_data/sent-input-test.txt'
+    test_data_file = 'test_data/anlp-sciner-test-sentences.txt'
     with open(test_data_file, 'r', encoding="utf-8") as f:
         lines = f.readlines()
     #word_lines = [line.split(" ") for line in lines]
