@@ -258,6 +258,16 @@ def get_tokens_and_ner_tags_by_seq_len(filename, seq_len):
     df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
     return pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
 
+# reference: https://github.com/huggingface/transformers/issues/9398
+class TestDataset:
+    def __init__(self, tokenized_texts):
+        self.tokenized_texts = tokenized_texts
+    
+    def __len__(self):
+        return len(self.tokenized_texts["input_ids"])
+    
+    def __getitem__(self, idx):
+        return {k: v[idx] for k, v in self.tokenized_texts.items()}
 
 """
     Trainer

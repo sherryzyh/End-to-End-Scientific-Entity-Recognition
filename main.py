@@ -168,7 +168,9 @@ if __name__ == '__main__':
             eval_dataset=validation_dataset,
             tokenizer=tokenizer,
             data_collator=data_collator,
-            compute_metrics=compute_metrics
+            compute_metrics=compute_metrics,
+            metric_for_best_model="eval_f1",
+            greater_is_better=True
         )
 
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
