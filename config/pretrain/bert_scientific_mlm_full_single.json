@@ -1,15 +1,15 @@
 {
     "general_args":
         {
-            "transformer": "dslim/bert-base-NER",
-            "tokenizer": "dslim/bert-base-NER",
-            "system": "bertner_scientific_mlm_subset",
+            "transformer": "bert-base-cased",
+            "tokenizer": "bert-base-cased",
+            "system": "bert_scientific_mlm_full",
             "result_root": "./results",
             "cache": ".cache"
         },
     "data_args":
         {
-            "train_data": "Unsupervised_Subset/tokenized_paper",
+            "train_data": "/work/yinghuan/data/SER_Unsupervised_Data/tokenized_paper",
             "val_data": "Annotated_Data/cleaned_data",
             "data_loading_method": "text_by_num_sentence",
             "num_sentence": 10
@@ -22,13 +22,13 @@
         },
     "train_args":
         {
-            "num_train_epochs": 20,
+            "num_train_epochs": 1,
             "do_train": true,
             "do_eval": true,
             "remove_unused_columns": false,
             "evaluation_strategy": "epoch",
             "logging_strategy": "epoch",
-            "per_device_train_batch_size": 8,
+            "per_device_train_batch_size": 4,
             "learning_rate": 2e-5,
             "weight_decay": 0.01,
             "save_strategy": "epoch",
