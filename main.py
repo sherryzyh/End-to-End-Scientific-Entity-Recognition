@@ -155,7 +155,9 @@ if __name__ == '__main__':
             eval_dataset=validation_dataset,
             tokenizer=tokenizer,
             data_collator=data_collator,
-            compute_metrics=compute_metrics
+            compute_metrics=compute_metrics,
+            metric_for_best_model="eval_f1",
+            greater_is_better=True
         )
     else:
         # CustomTrainer uses weighted loss
@@ -182,4 +184,7 @@ if __name__ == '__main__':
     eval_metrics["eval_samples"] = len(validation_dataset)
     trainer.log_metrics("eval", eval_metrics)
     trainer.save_metrics("eval", eval_metrics)
+
+    best_model_directory = os.path.join(output_dir, "best_f1_model")
+    model.save_pretrained(best_model_directory)
     shutil.copy2(config_file, output_dir)

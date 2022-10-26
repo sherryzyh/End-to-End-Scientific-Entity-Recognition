@@ -139,6 +139,9 @@ if __name__ == '__main__':
     model.save_pretrained(pt_save_directory)
 
     trainer.log_metrics("train", metrics)
+    trainer.save_metrics("train", metrics)
+
     trainer.log_metrics("eval", eval_result)
+    trainer.save_metrics("eval", eval_result)
 
     shutil.copy2(config_file, pt_save_directory)
