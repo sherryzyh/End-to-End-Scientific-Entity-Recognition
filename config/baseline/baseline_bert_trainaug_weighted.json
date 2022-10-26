@@ -14,9 +14,9 @@
         },
     "train_args":
         {
-            "seed": 30,
-            "num_epochs": 100,
-            "batch_size": 16,
+            "seed": 20,
+            "num_epochs": 50,
+            "batch_size": 8,
             "learning_rate": 2e-5,
             "weight_decay": 0.01,
             "loss": "weighted"
