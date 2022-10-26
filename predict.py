@@ -1,6 +1,6 @@
 '''
-This file runs each experiment. 
-Configs can be specified using command line argument "--config".
+This file runs inference. 
+Model, output file name, and batch size can be specified using command line arguments '--model', '--output' and '--batch_size'.
 '''
 
 from transformers import (
@@ -32,10 +32,10 @@ if __name__ == '__main__':
     test_data_file = 'test_data/anlp-sciner-test-sentences.txt'
     with open(test_data_file, 'r', encoding="utf-8") as f:
         lines = f.readlines()
-    #word_lines = [line.split(" ") for line in lines]
-    #for i in range(len(word_lines)):
-        #word_lines[i][-1] =  word_lines[i][-1].strip("\n")
-    tokens = tokenizer(lines, padding=True)
+    word_lines = [line.split(" ") for line in lines]
+    for i in range(len(word_lines)):
+        word_lines[i][-1] =  word_lines[i][-1].strip("\n")
+    tokens = tokenizer(word_lines, padding=True, is_split_into_words=True)
     test_dataset = TestDataset(tokens)
 
     model = AutoModelForTokenClassification.from_pretrained(model_path, id2label=id2label, label2id=label2id)
@@ -51,6 +51,21 @@ if __name__ == '__main__':
             p = predictions[i][j].item()
             preds[i][j] = model.config.id2label[p]
     
+    '''
+    with open(output_path, 'w', encoding='utf-8') as f:
+        for i in range(num_sent):
+            for j in range(sent_len):
+                id = tokens.input_ids[i][j]
+                token = tokenizer.decode([id])
+                label = preds[i][j]
+                if token == "[CLS]":
+                    continue
+                if token == "[SEP]":
+                    f.write("\n")
+                    break
+                f.write(token + " " + label + "\n")
+    '''
+
     with open(output_path, 'w', encoding='utf-8') as f:
         prev_token, prev_label = None, None
         for i in range(num_sent):
