@@ -147,7 +147,8 @@ if __name__ == '__main__':
         load_best_model_at_end=True
     )
 
-    trainer = CustomTrainer(
+    # CustomTrainer uses weighted loss
+    trainer = CustomTrainer(  
         model=model,
         args=training_args,
         train_dataset=train_dataset,
