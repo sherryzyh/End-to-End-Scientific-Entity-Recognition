@@ -3,7 +3,7 @@
         {
             "transformer": "dslim/bert-base-NER",
             "tokenizer": "dslim/bert-base-NER",
-            "system": "baseline",
+            "system": "baseline_ner_train_weighted",
             "cache": ".cache/"
         },
     "data_args":
@@ -19,6 +19,6 @@
             "batch_size": 8,
             "learning_rate": 2e-5,
             "weight_decay": 0.01,
-            "loss": "unweighted"
+            "loss": "weighted"
         }
 }

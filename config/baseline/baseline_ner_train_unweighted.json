@@ -1,0 +1,24 @@
+{
+    "general_args":
+        {
+            "transformer": "dslim/bert-base-NER",
+            "tokenizer": "dslim/bert-base-NER",
+            "system": "baseline_ner_train_unweighted",
+            "cache": ".cache/"
+        },
+    "data_args":
+        {
+            "train_data": "train_data",
+            "validation_data": "validation_data",
+            "data_loading_method": "sentence_contains_entity"
+        },
+    "train_args":
+        {
+            "seed": 20,
+            "num_epochs": 50,
+            "batch_size": 8,
+            "learning_rate": 2e-5,
+            "weight_decay": 0.01,
+            "loss": "unweighted"
+        }
+}
