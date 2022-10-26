@@ -22,7 +22,7 @@
         },
     "train_args":
         {
-            "num_train_epochs": 10,
+            "num_train_epochs": 20,
             "do_train": true,
             "do_eval": true,
             "remove_unused_columns": false,
