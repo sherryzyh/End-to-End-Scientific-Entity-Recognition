@@ -13,6 +13,7 @@ from transformers import Trainer
 from zmq import device
 from datetime import datetime
 import pytz
+from utils import EntitySentence
 
 label_list = [
     'O', 
@@ -54,6 +55,7 @@ def compute_metrics(p):
     Data Loading Methods
 """
 def get_tokens_and_ner_tags(filename, method, **kwargs):
+    # print(f"Loading Method: {method} | filename: {filename}")
     if method == "sentence_contains_entity":
         return get_tokens_and_ner_tags_sentence_contains_entity(filename)
     if method == "by_num_sentence":
@@ -66,6 +68,8 @@ def get_tokens_and_ner_tags(filename, method, **kwargs):
         return get_tokens_and_ner_tags_by_seq_len(filename, **kwargs)
     if method == "text_by_num_sentence":
         return get_text_by_num_sentence(filename, **kwargs)
+    if method == "text_per_sentence":
+        return get_text(filename)
 
 def get_text_by_num_sentence(filename, num_sentence):
     count = 0
@@ -80,6 +84,20 @@ def get_text_by_num_sentence(filename, num_sentence):
                 text.append(currtext)
                 currtext = ""
                 count = 0
+    df = pd.DataFrame({'text': text})
+    return pd.DataFrame({'text': text})
+
+def get_text(filename):
+    text = []
+    entitysentence = EntitySentence()
+    with open(filename, 'r', encoding="utf-8") as f:
+        lines = f.read().splitlines()
+        for line in lines:
+            entitysentence.readLine(line)
+            # print(entitysentence.sentence)
+            if entitysentence.isEnd:
+                text.append(entitysentence.sentence)
+                entitysentence.clear()
     df = pd.DataFrame({'text': text})
     return pd.DataFrame({'text': text})
 
@@ -248,7 +266,7 @@ class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         labels = inputs.get("labels")
         # forward pass
-        print(inputs)
+        # print(inputs)
         outputs = model(**inputs)
         logits = outputs.get("logits")
         # compute weighted cross entropy loss

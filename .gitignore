@@ -9,7 +9,6 @@ __pycache__/
 .ipynb_checkpoints/
 
 
-Annotated_Data/stats.txt
-
 results/
 *.log
+.cache/
