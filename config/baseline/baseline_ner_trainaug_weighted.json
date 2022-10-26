@@ -3,7 +3,7 @@
         {
             "transformer": "dslim/bert-base-NER",
             "tokenizer": "dslim/bert-base-NER",
-            "system": "baseline_bert_trainaug_weighted",
+            "system": "baseline_ner_trainaug_weighted",
             "cache": ".cache/"
         },
     "data_args":

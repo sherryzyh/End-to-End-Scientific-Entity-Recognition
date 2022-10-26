@@ -185,6 +185,6 @@ if __name__ == '__main__':
     trainer.log_metrics("eval", eval_metrics)
     trainer.save_metrics("eval", eval_metrics)
 
-    best_model_directory = os.path.join(output_dir, "best_f1_model")
-    model.save_pretrained(best_model_directory)
+    # best_model_directory = os.path.join(output_dir, "best_f1_model")
+    # model.save_pretrained(best_model_directory)
     shutil.copy2(config_file, output_dir)
