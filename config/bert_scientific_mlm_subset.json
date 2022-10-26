@@ -2,12 +2,14 @@
     "general_args":
         {
             "transformer": "bert-base-cased",
-            "system": "bert_scientific_mlm",
-            "result_root": "./results"
+            "tokenizer": "bert-base-cased",
+            "system": "test_bert_scientific_mlm",
+            "result_root": "./results",
+            "cache": ".cache"
         },
     "data_args":
         {
-            "train_data": "Raw_Unsupervised_Data/parsed_paper",
+            "train_data": "Unsupervised_Subset/tokenized_paper",
             "val_data": "Annotated_Data/cleaned_data",
             "data_loading_method": "text_by_num_sentence",
             "num_sentence": 10

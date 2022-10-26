@@ -1,9 +1,10 @@
 {
     "general_args":
         {
-            "transformer": "dslim/bert-base-NER",
-            "tokenizer": "dslim/bert-base-NER",
-            "system": "baseline_unweighted",
+            "transformer": "pretrained_model/bert_mlm_demoset",
+            "tokenizer": "bert-base-cased",
+            "system": "bert_mlm_demo_10e_weighted_ft",
+            "result_root": "./results",
             "cache": ".cache/"
         },
     "data_args":
@@ -15,8 +16,8 @@
     "train_args":
         {
             "seed": 20,
-            "num_epochs": 100,
-            "batch_size": 16,
+            "num_epochs": 50,
+            "batch_size": 8,
             "learning_rate": 2e-5,
             "weight_decay": 0.01
         }

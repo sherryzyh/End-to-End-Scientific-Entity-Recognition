@@ -2,12 +2,13 @@
     "general_args":
         {
             "transformer": "dslim/bert-base-NER",
-            "system": "scientific_mlm",
+            "tokenizer": "dslim/bert-base-NER",
+            "system": "bertner_scientific_mlm",
             "result_root": "./results"
         },
     "data_args":
         {
-            "train_data": "Raw_Unsupervised_Data/parsed_paper",
+            "train_data": "Unsupervised_Demo/tokenized_paper",
             "val_data": "Annotated_Data/cleaned_data",
             "data_loading_method": "text_by_num_sentence",
             "num_sentence": 10
@@ -20,7 +21,7 @@
         },
     "train_args":
         {
-            "num_train_epochs": 1,
+            "num_train_epochs": 100,
             "do_train": true,
             "do_eval": true,
             "remove_unused_columns": false,
