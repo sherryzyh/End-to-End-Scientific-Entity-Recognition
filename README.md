@@ -37,7 +37,11 @@ python main.py -c [config_file]
 ```
 
 ### Predict
+- For each experiment, trainer automatically save checkpoints for each epoch, use [find best model](https://github.com/sherryzyh/End-to-End-Scientific-Entity-Recognition/edit/main/README.md#find-best-model) script to find best models
 - Predict data should be **ONE** text file with **ONE** sentence per line.
+- Prepare your predict config file
+   - Modify "sentence_file" path
+   - Modify "model_name" from your saved best model
 ```
 python predict.py -c [config_file]
 ```
@@ -86,8 +90,10 @@ python tool/clean_annotated_data.py
 ```
 python tool/data_analyzer.py
 ```
-
-The module defines the usages of some functionalities that are commonly used in preprocessing procedure (like `raw_data_collector` and `data_augmenter`).     
+### Find Best Model
+- Find best models
+   - with maximum f1 score
+   - with minimum evaluation loss
 
 ## Reference
 
