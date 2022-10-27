@@ -1,0 +1,15 @@
+{
+    "system_config":
+        {
+            "model_root": "results/confirmed",
+            "model_name": "bert_mlm_large_10e_weighted_ft_10-26_11-01-13",
+            "metric": "best_f1_model",
+            "tokenizer": "bert-base-cased"
+        },
+    "sentence_file": "test_data/anlp-sciner-test-sentences.txt",
+    "test_args":
+        {
+            "output_dir": "test_predict",
+            "per_device_eval_batch_size": 32
+        }
+}
