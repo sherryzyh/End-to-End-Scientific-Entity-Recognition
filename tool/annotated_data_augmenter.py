@@ -1,5 +1,6 @@
 import os
 import json
+import spacy
 import openai
 import utils
 import spacy

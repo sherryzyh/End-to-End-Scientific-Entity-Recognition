@@ -1,6 +1,9 @@
 import os
 import argparse
 from collections import defaultdict
+import sys 
+sys.path.append(".")
+sys.path.append("..")
 from utils import EntitySentence
 # TODO: the length statistic of different entities
 

@@ -1,5 +1,8 @@
 import os
 from PyPDF2 import PdfReader
+import sys 
+sys.path.append(".")
+sys.path.append("..")
 from utils import MyTokenizer, ACLScraper
 import spacy
 import argparse
