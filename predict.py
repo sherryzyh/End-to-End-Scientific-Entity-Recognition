@@ -71,7 +71,8 @@ if __name__ == '__main__':
     """
         Prepare Test Dataset
     """
-    test_dataset = get_test_dataset(config["sentence_file"])
+    test_file_path = os.path.join("Dataset", "test_data", config["sentence_file"])
+    test_dataset = get_test_dataset(test_file_path)
     test_dataset = test_dataset.map(tokenize_and_align_labels, batched=True)
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
@@ -98,7 +99,8 @@ if __name__ == '__main__':
     """
         Output
     """
-    output_path = os.path.join('output_conll', f"pred_sentence_{system_config['model_name']}.conll")
+    output_config = config["output_config"]
+    output_path = os.path.join(output_config["output_root"], f"pred_{output_config["output_level"]_{system_config['model_name']}.conll")
     with open(output_path, "w", encoding="utf-8") as f:
         for i in range(n_sentences):
             # print(test_dataset[i])

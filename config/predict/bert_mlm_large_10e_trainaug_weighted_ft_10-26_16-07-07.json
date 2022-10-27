@@ -6,10 +6,14 @@
             "metric": "best_f1_model",
             "tokenizer": "bert-base-cased"
         },
-    "sentence_file": "test_data/anlp-sciner-test-sentences.txt",
+    "sentence_file": "anlp-sciner-test-sentences.txt",
+    "output_config":
+        {
+            "output_root": "submission/submit_prediction_output/",
+            "output_level": "sentence"
+        },
     "test_args":
         {
-            "output_dir": "test_predict",
             "per_device_eval_batch_size": 32
         }
 }
