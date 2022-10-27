@@ -65,8 +65,8 @@ if __name__ == '__main__':
     
     os.environ['TRANSFORMERS_CACHE'] = general_args["cache"]
 
-    train_data_directory = data_args['train_data']
-    validation_data_directory = data_args['validation_data']
+    train_data_directory = os.path.join("Dataset", data_args['train_data'])
+    validation_data_directory = os.path.join("Dataset", data_args['validation_data'])
     transformer_name = general_args['transformer']
     tokenizer_name = general_args['tokenizer']
 
@@ -173,5 +173,5 @@ if __name__ == '__main__':
     eval_metrics["eval_samples"] = len(validation_dataset)
     trainer.log_metrics("eval", eval_metrics)
     trainer.save_metrics("eval", eval_metrics)
-    
+
     shutil.copy2(config_file, output_dir)

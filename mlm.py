@@ -63,8 +63,8 @@ if __name__ == '__main__':
     """
         Prepare Data
     """
-    train_data_directory = data_args['train_data']
-    val_data_directory = data_args['val_data']
+    train_data_directory = os.path.join("Dataset", data_args['train_data'])
+    val_data_directory = os.path.join("Dataset", data_args['validation_data'])
     data_loading_method = data_args['data_loading_method']
     num_sentence = data_args['num_sentence']
     train_dataset = get_dataset(directory=train_data_directory,
