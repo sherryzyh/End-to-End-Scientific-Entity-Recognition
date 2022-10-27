@@ -43,7 +43,10 @@ def tokenize_and_align_labels(examples):
     return tokenized_inputs
 
 if __name__ == '__main__':
-    # parse command line arguments and load config
+    
+    """
+        Parse Config
+    """
     parser = ArgumentParser()
     parser.add_argument('--config', '-c',
                         type=str,
@@ -54,23 +57,39 @@ if __name__ == '__main__':
                         default=None,
                         help='Resume from a saved checkpoint')
     args = parser.parse_args()
-    config_file = args.config
+    
+    """
+        Configs
+    """
     checkpoint = args.resume_from_checkpoint
-    with open(config_file, 'r') as f:
+    with open(args.config, 'r') as f:
         config = json.load(f)
     
     general_args = config['general_args']
     data_args = config['data_args']
     train_args = config['train_args']
-    
     os.environ['TRANSFORMERS_CACHE'] = general_args["cache"]
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    set_seed(train_args['seed'])
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    else:
+        device = "cpu"
+    print(f"deivce: {device}")
 
-    train_data_directory = os.path.join("Dataset", data_args['train_data'])
-    validation_data_directory = os.path.join("Dataset", data_args['validation_data'])
     transformer_name = general_args['transformer']
     tokenizer_name = general_args['tokenizer']
 
-    # get data loading method and check for the corresponding required argument from config
+    experiment_time = get_timestamp()
+    experiment_name = "_".join([general_args["system"], experiment_time.strftime("%m-%d_%H-%M-%S")])
+
+    output_dir = "./results/" + experiment_name
+
+    """
+        Prepare Dataset
+    """
+    train_data_directory = os.path.join("Dataset", data_args['train_data'])
+    validation_data_directory = os.path.join("Dataset", data_args['validation_data'])
     method = data_args['data_loading_method']
     kwargs = dict()
     get_data_arg = None
@@ -92,13 +111,11 @@ if __name__ == '__main__':
         assert get_data_arg in data_args, assert_message
         kwargs[get_data_arg] = data_args[get_data_arg]
     
-    set_seed(train_args['seed'])
 
-    # load and preprocess data
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    #seq_len_stats = []
+    """
+        Tokenize
+    """
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, cache_dir=general_args["cache"])
-    print(tokenizer.vocab_files_names)
 
     train_dataset = get_dataset(train_data_directory, method, **kwargs)
     validation_dataset = get_dataset(validation_data_directory, method, **kwargs)
@@ -107,20 +124,13 @@ if __name__ == '__main__':
     
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
     
-    # train and eval
+    """
+        Trainer
+    """
     # reference for "ignore_mismatched_sizes": https://github.com/huggingface/transformers/issues/14218
-    if torch.cuda.is_available():
-        device = "cuda:0"
-    else:
-        device = "cpu"
-    print(f"deivce: {device}")
     model = AutoModelForTokenClassification.from_pretrained(transformer_name, ignore_mismatched_sizes=True, id2label=id2label, label2id=label2id).to(device)
-    # model = AutoModelForTokenClassification.from_pretrained(transformer, cache_dir=general_args["cache"]).to(device)
-    print(model)
+    # print(model)
 
-    experiment_time = get_timestamp()
-    experiment_name = "_".join([general_args["system"], experiment_time.strftime("%m-%d_%H-%M-%S")])
-    output_dir = "./results/" + experiment_name
     training_args = TrainingArguments(
         output_dir=output_dir,
         evaluation_strategy="epoch",
@@ -135,6 +145,7 @@ if __name__ == '__main__':
     )
 
     if "loss" in train_args and train_args["loss"] == "unweighted":
+        # Normal Trainer use unweighted loss
         trainer = Trainer(
             model=model,
             args=training_args,
@@ -156,6 +167,10 @@ if __name__ == '__main__':
             compute_metrics=compute_metrics
         )
 
+
+    """
+        Train and Eval
+    """
     train_result = trainer.train(resume_from_checkpoint=checkpoint)
     metrics = train_result.metrics
     
@@ -170,4 +185,4 @@ if __name__ == '__main__':
     trainer.log_metrics("eval", eval_metrics)
     trainer.save_metrics("eval", eval_metrics)
 
-    shutil.copy2(config_file, output_dir)
+    shutil.copy2(args.config, output_dir)
