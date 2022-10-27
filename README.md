@@ -98,6 +98,13 @@ python tool/data_analyzer.py
    - with maximum f1 score
    - with minimum evaluation loss
 
+### Clear Unused Model
+- Each checkpoint is $~3$G large. To save your storage space, we provide a script to clear unused checkpoints.
+- By default, we remove every checkpoints other than `best_f1_model` and `best_loss_model`. You can change the metric for model selection in [find best model](https://github.com/sherryzyh/End-to-End-Scientific-Entity-Recognition/edit/main/README.md#find-best-model) script.
+- All config files will be kept.
+```
+python clear_unused_ckpt.py -e [exp_name]
+```
 ## Reference
 
 https://huggingface.co/docs/transformers/tasks/token_classification
