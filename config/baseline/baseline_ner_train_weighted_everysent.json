@@ -10,8 +10,7 @@
         {
             "train_data": "train_data",
             "validation_data": "validation_data",
-            "data_loading_method": "by_num_sentence",
-            "num_sentence": 1
+            "data_loading_method": "sentence_contains_entity"
         },
     "train_args":
         {

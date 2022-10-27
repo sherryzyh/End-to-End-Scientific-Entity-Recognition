@@ -1,9 +1,9 @@
 {
     "general_args":
         {
-            "transformer": "dslim/bert-base-NER",
-            "tokenizer": "dslim/bert-base-NER",
-            "system": "baseline_ner_train_weighted",
+            "transformer": "bert-base-cased",
+            "tokenizer": "bert-base-cased",
+            "system": "baseline_bert_train_weighted",
             "cache": ".cache/"
         },
     "data_args":
