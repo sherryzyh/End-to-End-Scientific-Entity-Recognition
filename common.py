@@ -39,6 +39,23 @@ def get_dataset(directory, method, **kwargs):
     dataset = Dataset.from_pandas(df)
     return dataset
 
+def get_test_dataset(filename):
+    with open(filename, 'r', encoding="utf-8") as f:
+        lines = f.read().splitlines()
+        tokens, entities = [], []
+        for line in lines:
+            line_tokens = line.split(" ")
+            line_entities = ['O'] * len(line_tokens)
+            if len(line_tokens) > 0:
+                tokens.append(line_tokens)
+                entities.append(line_entities)
+                # print(len(line_tokens), line_tokens)
+                # print(len(line_entities), line_entities)
+    df = pd.DataFrame({'tokens': tokens, 'ner_tags': entities})
+
+    dataset = Dataset.from_pandas(df)
+    return dataset
+
 def compute_metrics(p):
     metric = load_metric("seqeval")
 
