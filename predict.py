@@ -16,7 +16,7 @@ import os
 import torch
 import numpy as np
 
-from common import get_dataset, get_test_dataset, compute_metrics, id2label, label2id, CustomTrainer, TestDataset
+from common import get_test_dataset, compute_metrics, id2label, label2id, CustomTrainer
 
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
@@ -38,8 +38,8 @@ def tokenize_and_align_labels(examples):
 
     tokenized_inputs["labels"] = labels
     return tokenized_inputs
+
 if __name__ == '__main__':
-    # parse command line arguments and load config
     parser = ArgumentParser()
     parser.add_argument('--model', '-m',
                         type=str,
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         Arguments
     """
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    output_path = os.path.join('output_conll', f"pred_{args.model}.conll")
+    output_path = os.path.join('output_conll', f"pred_sentence_{args.model}.conll")
 
     """
         Model and Tokenizer
@@ -89,51 +89,30 @@ if __name__ == '__main__':
                         tokenizer=tokenizer,
                         data_collator=data_collator)
     raw_preds = trainer.predict(test_dataset)
-    
+
     predictions = np.argmax(raw_preds.predictions.squeeze(), axis=-1)
     label_ids = raw_preds.label_ids
-    print(raw_preds.predictions)
-    print(raw_preds.label_ids)
-    
-    # predictions = torch.tensor(raw_preds.predictions)
-    # predictions = torch.argmax(predictions.squeeze(), axis=-1)
-    # num_sent, sent_len = predictions.size()
-    # preds = [[None] * sent_len for i in range(num_sent)]
-    # for i in range(num_sent):
-    #     for j in range(sent_len):
-    #         p = predictions[i][j].item()
-    #         preds[i][j] = model.config.id2label[p]
-    # '''
-    # with open(output_path, 'w', encoding='utf-8') as f:
-    #     for i in range(num_sent):
-    #         for j in range(sent_len):
-    #             id = tokens.input_ids[i][j]
-    #             token = tokenizer.decode([id])
-    #             label = preds[i][j]
-    #             if token == "[CLS]":
-    #                 continue
-    #             if token == "[SEP]":
-    #                 f.write("\n")
-    #                 break
-    #             f.write(token + " " + label + "\n")
-    # '''
-    # # with open(output_path, 'w', encoding='utf-8') as f:
-    # #     prev_token, prev_label = None, None
-    # #     for i in range(num_sent):
-    # #         for j in range(sent_len):
-    # #             id = tokens.input_ids[i][j]
-    # #             token = tokenizer.decode([id])
-    # #             label = preds[i][j]
-    # #             if token == "[CLS]":
-    # #                 continue
-    # #             if token == "[SEP]":
-    # #                 f.write(prev_token + " " + prev_label + "\n\n")
-    # #                 prev_token = None
-    # #                 break
-    # #             if token[:2] != "##":
-    # #                 if prev_token:
-    # #                     f.write(prev_token + " " + prev_label + "\n")
-    # #                 prev_token = token
-    # #                 prev_label = label
-    # #             else:
-    # #                 prev_token = prev_token + token[2:]
+    print("predictions shape:", predictions.shape)
+    print("label_ids shape:", label_ids.shape)
+    print("len(testset):", len(test_dataset))
+
+    n_sentences = predictions.shape[0]
+    sen_length = predictions.shape[1]
+    with open(output_path, "w", encoding="utf-8") as f:
+        for i in range(n_sentences):
+            # print(test_dataset[i])
+            tokens = test_dataset[i]["tokens"]
+            labels = []
+            for j in range(sen_length):
+                if label_ids[i][j] == -100:
+                    continue
+                pred_label = id2label[predictions[i][j]]
+                labels.append(pred_label)
+
+            if len(tokens) != len(labels):
+                print(len(tokens), tokens)
+                print(len(labels), labels)
+
+            for token, label in zip(tokens, labels):
+                f.write(f"{token} {label}\n")
+            f.write("\n")
