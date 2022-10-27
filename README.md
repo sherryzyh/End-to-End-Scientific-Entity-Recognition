@@ -64,7 +64,10 @@ python tool/raw_data_collector.py -c -p -t
 [-t][--tokenize] tokenize paper
 ```
 - Collect Unsupervised Data: similar to supervised data except that we collect all papers to do pre-training
+- Ues raw data collecter to collect all papers from year range
+- Use build unsupervised dataset tool to split a year-conference-balanced smaller dataset, depending on your computational resource
 ```
+python tool/raw_data_collector.py -un
 python tool/build_unsupervised_dataset.py
 ```
 
