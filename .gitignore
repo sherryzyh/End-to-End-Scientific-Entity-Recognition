@@ -16,3 +16,6 @@ results/
 *.log
 .cache/
 exp.sh
+output_conll/pred_bert_mlm_large_10e_trainaug_weighted_ft_10-26_16-07-07.conll
+output_conll/raw_predictions.conll
+output_conll/sent-input-test-1.conll
