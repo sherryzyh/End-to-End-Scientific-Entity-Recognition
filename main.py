@@ -104,19 +104,6 @@ if __name__ == '__main__':
     validation_dataset = get_dataset(validation_data_directory, method, **kwargs)
     train_dataset = train_dataset.map(tokenize_and_align_labels, batched=True)
     validation_dataset = validation_dataset.map(tokenize_and_align_labels, batched=True)
-    '''
-    not_truncated, may_be_truncated = 0, 0
-    for i in seq_len_stats:
-        if i < 512:
-            not_truncated += 1
-        else:
-            may_be_truncated += 1
-    print(f"not truncated: {not_truncated}")
-    print(f"may be truncated: {may_be_truncated}")
-    print(f"avg of seq len: {statistics.mean(seq_len_stats)}")
-    print(f"median of seq len: {statistics.median(seq_len_stats)}")
-    print(f"max of seq len: {max(seq_len_stats)}")
-    '''
     
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
     
@@ -186,7 +173,5 @@ if __name__ == '__main__':
     eval_metrics["eval_samples"] = len(validation_dataset)
     trainer.log_metrics("eval", eval_metrics)
     trainer.save_metrics("eval", eval_metrics)
-
-    # best_model_directory = os.path.join(output_dir, "best_f1_model")
-    # model.save_pretrained(best_model_directory)
+    
     shutil.copy2(config_file, output_dir)
