@@ -13,6 +13,7 @@ from transformers import (
 )
 from argparse import ArgumentParser
 import os
+import json
 import torch
 import numpy as np
 
@@ -41,40 +42,36 @@ def tokenize_and_align_labels(examples):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--model', '-m',
+    parser.add_argument('--config_file', '-c',
                         type=str,
-                        help='Model to load',
-                        default='bert_mlm_large_10e_trainaug_weighted_ft_10-26_16-07-07')
-    parser.add_argument('--batch_size',
-                        type=int,
-                        help='Batch size',
-                        default=32)
+                        help='Config file',
+                        default='config/predict/bert_mlm_large_10e_trainaug_weighted_ft_10-26_16-07-07.json')
     args = parser.parse_args()
 
     """
         Arguments
     """
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    output_path = os.path.join('output_conll', f"pred_sentence_{args.model}.conll")
+    with open(args.config_file, 'r') as f:
+        config = json.load(f)
+    system_config = config["system_config"]
 
     """
         Model and Tokenizer
     """
-    model_root = "/work/yinghuan/projects/End-to-End-Scientific-Entity-Recognition/results/confirmed"
-    model_path = os.path.join(model_root, args.model, "best_f1_model")
-    model = AutoModelForTokenClassification.from_pretrained(model_path,
+    model = os.path.join(system_config["model_root"], system_config["model_name"], system_config["metric"])
+    model = AutoModelForTokenClassification.from_pretrained(model,
                                                             ignore_mismatched_sizes=True,
                                                             id2label=id2label,
                                                             label2id=label2id).to(device)
 
 
-    tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+    tokenizer = AutoTokenizer.from_pretrained(system_config["tokenizer"])
 
     """
         Prepare Test Dataset
     """
-    test_data_file = 'test_data/anlp-sciner-test-sentences.txt'
-    test_dataset = get_test_dataset(test_data_file)
+    test_dataset = get_test_dataset(config["sentence_file"])
     test_dataset = test_dataset.map(tokenize_and_align_labels, batched=True)
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
@@ -82,10 +79,9 @@ if __name__ == '__main__':
     """
         Predict
     """
-    train_args = TrainingArguments(output_dir='test_predict',
-                                    per_device_eval_batch_size=args.batch_size)
+    test_args = TrainingArguments(**config["test_args"])
     trainer = Trainer(model=model,
-                        args=train_args,
+                        args=test_args,
                         tokenizer=tokenizer,
                         data_collator=data_collator)
     raw_preds = trainer.predict(test_dataset)
@@ -98,6 +94,11 @@ if __name__ == '__main__':
 
     n_sentences = predictions.shape[0]
     sen_length = predictions.shape[1]
+
+    """
+        Output
+    """
+    output_path = os.path.join('output_conll', f"pred_sentence_{system_config['model_name']}.conll")
     with open(output_path, "w", encoding="utf-8") as f:
         for i in range(n_sentences):
             # print(test_dataset[i])
