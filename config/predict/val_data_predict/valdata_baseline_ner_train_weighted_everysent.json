@@ -1,0 +1,19 @@
+{
+    "system_config":
+        {
+            "model_root": "results/confirmed",
+            "model_name": "baseline_ner_train_weighted_everysent_10-27_01-24-04",
+            "metric": "best_f1_model",
+            "tokenizer": "dslim/bert-base-NER"
+        },
+    "sentence_file": "validation_data_for_predict.txt",
+    "output_config":
+        {
+            "output_root": "predictions",
+            "output_level": "sentence"
+        },
+    "test_args":
+        {
+            "per_device_eval_batch_size": 32
+        }
+}
