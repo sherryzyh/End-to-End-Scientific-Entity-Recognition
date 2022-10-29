@@ -22,14 +22,25 @@ from common import get_test_dataset, compute_metrics, id2label, label2id, Custom
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True)
     labels = []
+    # print(len(examples["tokens"]))
+    # print(len(examples["ner_tags"]))
     for i, label in enumerate(examples["ner_tags"]):
         word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
         previous_word_idx = None
         label_ids = []
+        if len(label) != len(examples["tokens"][i]):
+            print("tokens:", examples["tokens"][i])
+            print("labels:", label)
+        # print("tokens:", len(examples["tokens"][i]), examples["tokens"][i])
+        # print("label:", len(label), label)
+        # print("word ids:", word_ids)
         for word_idx in word_ids:  # Set the special tokens to -100.
             if word_idx is None:
                 label_ids.append(-100)
             elif word_idx != previous_word_idx:  # Only label the first token of a given word.
+                # print(f"word idx: {word_idx}")
+                # print(f"label: {label[word_idx]}")
+                # print(f"labelid: {label2id[label[word_idx]]}")
                 label_ids.append(label2id[label[word_idx]])
             else:
                 label_ids.append(-100)
@@ -45,13 +56,14 @@ if __name__ == '__main__':
     parser.add_argument('--config_file', '-c',
                         type=str,
                         help='Config file',
-                        default='config/predict/bert_mlm_large_10e_trainaug_weighted_ft_10-26_16-07-07.json')
+                        required=True)
+    parser.add_argument('--self_val_data', '-s', default=True)
     args = parser.parse_args()
 
     """
         Arguments
     """
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     with open(args.config_file, 'r') as f:
         config = json.load(f)
     system_config = config["system_config"]
@@ -72,6 +84,7 @@ if __name__ == '__main__':
         Prepare Test Dataset
     """
     test_file_path = os.path.join("Dataset", "test_data", config["sentence_file"])
+    print(f"test_file_path: {test_file_path}")
     test_dataset = get_test_dataset(test_file_path)
     test_dataset = test_dataset.map(tokenize_and_align_labels, batched=True)
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
@@ -80,7 +93,10 @@ if __name__ == '__main__':
     """
         Predict
     """
-    test_args = TrainingArguments(**config["test_args"])
+    output_config = config["output_config"]
+    output_dir = os.path.join(output_config["output_root"], system_config['model_name'])
+    test_args = TrainingArguments(output_dir=output_dir,
+                                    **config["test_args"])
     trainer = Trainer(model=model,
                         args=test_args,
                         tokenizer=tokenizer,
@@ -99,8 +115,7 @@ if __name__ == '__main__':
     """
         Output
     """
-    output_config = config["output_config"]
-    output_path = os.path.join(output_config["output_root"], f"pred_{output_config['output_level']}_{system_config['model_name']}.conll")
+    output_path = os.path.join(output_dir, f"pred_{output_config['output_level']}_{system_config['model_name']}.conll")
     with open(output_path, "w", encoding="utf-8") as f:
         for i in range(n_sentences):
             # print(test_dataset[i])
@@ -113,8 +128,9 @@ if __name__ == '__main__':
                 labels.append(pred_label)
 
             if len(tokens) != len(labels):
-                print(len(tokens), tokens)
-                print(len(labels), labels)
+                labels = ['O'] * len(tokens)
+                # print("tokens:", len(tokens), tokens)
+                # print("labels:", len(labels), labels)
 
             for token, label in zip(tokens, labels):
                 f.write(f"{token} {label}\n")
