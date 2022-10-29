@@ -1,9 +1,9 @@
 {
     "general_args":
         {
-            "transformer": "bert-base-cased",
-            "tokenizer": "bert-base-cased",
-            "system": "baseline_bert_train_weighted_everysent",
+            "transformer": "dslim/bert-base-NER",
+            "tokenizer": "dslim/bert-base-NER",
+            "system": "baseline_ner_train_unweighted_everysent",
             "cache": ".cache/"
         },
     "data_args":
@@ -20,6 +20,6 @@
             "batch_size": 16,
             "learning_rate": 2e-5,
             "weight_decay": 0.01,
-            "loss": "weighted"
+            "loss": "unweighted"
         }
 }

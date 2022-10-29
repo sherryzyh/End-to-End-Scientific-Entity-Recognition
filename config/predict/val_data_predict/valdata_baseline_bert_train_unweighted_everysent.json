@@ -1,0 +1,19 @@
+{
+    "system_config":
+        {
+            "model_root": "results/confirmed",
+            "model_name": "baseline_bert_train_unweighted_everysent",
+            "metric": "best_f1_model",
+            "tokenizer": "bert-base-cased"
+        },
+    "sentence_file": "validation_data_for_predict.txt",
+    "output_config":
+        {
+            "output_root": "predictions",
+            "output_level": "sentence"
+        },
+    "test_args":
+        {
+            "per_device_eval_batch_size": 32
+        }
+}
