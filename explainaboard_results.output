@@ -1,0 +1,48 @@
+***** baseline_bert_trainaug_weighted *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa2522899306921617d5
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa2522899306921617d5
+F1: 0.4197 [0.3543, 0.4763]
+***** baseline_bert_train_unweighted_everysent *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa286f8b69f2dc784c52
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa286f8b69f2dc784c52
+F1: 0.4610 [0.3833, 0.5372]
+***** baseline_bert_train_weighted *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa2a22899306921617da
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa2a22899306921617da
+F1: 0.3822 [0.3204, 0.4415]
+***** baseline_bert_train_weighted_everysent *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa2c22899306921617df
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa2c22899306921617df
+F1: 0.4739 [0.3867, 0.5483]
+***** baseline_ner_trainaug_weighted *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa2f22899306921617e4
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa2f22899306921617e4
+F1: 0.4383 [0.3751, 0.5011]
+***** baseline_ner_train_unweighted_everysent *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa31842b5e17fc54e098
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa31842b5e17fc54e098
+F1: 0.4731 [0.3933, 0.5483]
+***** baseline_ner_train_weighted *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa3323931db933018dc0
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa3323931db933018dc0
+F1: 0.3566 [0.2959, 0.4149]
+***** baseline_ner_train_weighted_everysent *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa356f8b69f2dc784c57
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa356f8b69f2dc784c57
+F1: 0.4802 [0.3982, 0.5520]
+***** baseline_ner_unweighted *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa376f8b69f2dc784c5c
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa376f8b69f2dc784c5c
+F1: 0.3644 [0.2946, 0.4296]
+***** bert_mlm_full_10e_trainaug_weighted_ft *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa3a6f8b69f2dc784c61
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa3a6f8b69f2dc784c61
+F1: 0.5085 [0.4478, 0.5681]
+***** bert_mlm_large_10e_trainaug_weighted_ft *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa3c23931db933018dc5
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa3c23931db933018dc5
+F1: 0.4531 [0.3851, 0.5156]
+***** bert_mlm_large_10e_train_weighted_ft *****
+Successfully evaluated system jyy_baseline_bert_train_unweighted_everysent with ID 635daa3e842b5e17fc54e09d
+View it at https://explainaboard.inspiredco.ai/systems?system_id=635daa3e842b5e17fc54e09d
+F1: 0.4154 [0.3503, 0.4706]
