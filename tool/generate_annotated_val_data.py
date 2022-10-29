@@ -11,7 +11,7 @@ if __name__ == '__main__':
                         default='Dataset/validation_data')
     parser.add_argument('--data_gt', '-g',
                         type=str,
-                        default='predictions/validation_data_ground_truth.txt')
+                        default='predictions/validation_data_ground_truth.conll')
     parser.add_argument('--data_tokens', '-t',
                         type=str,
                         default='predictions/validation_data_tokens.txt')
