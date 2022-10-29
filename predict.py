@@ -100,7 +100,7 @@ if __name__ == '__main__':
         Output
     """
     output_config = config["output_config"]
-    output_path = os.path.join(output_config["output_root"], f"pred_{output_config["output_level"]_{system_config['model_name']}.conll")
+    output_path = os.path.join(output_config["output_root"], f"pred_{output_config['output_level']}_{system_config['model_name']}.conll")
     with open(output_path, "w", encoding="utf-8") as f:
         for i in range(n_sentences):
             # print(test_dataset[i])

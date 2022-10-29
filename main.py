@@ -72,7 +72,7 @@ if __name__ == '__main__':
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     set_seed(train_args['seed'])
     if torch.cuda.is_available():
-        device = "cuda:0"
+        device = "cuda"
     else:
         device = "cpu"
     print(f"deivce: {device}")
