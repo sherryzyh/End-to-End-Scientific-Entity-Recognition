@@ -1,0 +1,25 @@
+{
+    "general_args":
+        {
+            "transformer": "pretrained_model/bert_mlm_full_10e",
+            "tokenizer": "bert-base-cased",
+            "system": "bert_mlm_full_10e_trainaug_weighted_ft_everysent",
+            "result_root": "./results",
+            "cache": ".cache/"
+        },
+    "data_args":
+        {
+            "train_data": "train_aug_data",
+            "validation_data": "validation_data",
+            "data_loading_method": "by_num_sentence",
+            "num_sentence": 1
+        },
+    "train_args":
+        {
+            "seed": 20,
+            "num_epochs": 50,
+            "batch_size": 8,
+            "learning_rate": 2e-5,
+            "weight_decay": 0.01
+        }
+}

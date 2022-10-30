@@ -1,0 +1,25 @@
+{
+    "general_args":
+        {
+            "transformer": "bert-base-cased",
+            "tokenizer": "bert-base-cased",
+            "system": "baseline_bert_trainaug_weighted_everysent",
+            "cache": ".cache/"
+        },
+    "data_args":
+        {
+            "train_data": "train_aug_data",
+            "validation_data": "validation_data",
+            "data_loading_method": "by_num_sentence",
+            "num_sentence": 1
+        },
+    "train_args":
+        {
+            "seed": 20,
+            "num_epochs": 50,
+            "batch_size": 16,
+            "learning_rate": 2e-5,
+            "weight_decay": 0.01,
+            "loss": "weighted"
+        }
+}
